@@ -1,1 +1,997 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#071523">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="모르스">
+<meta name="description" content="모르스 부호 해석기 · 생성기 — 트리 시각화로 해독 과정을 봅니다">
+<title>MORSE CODE · 모르스 부호 해석기</title>
+<style>
+:root{
+  --bg:#071523; --bg2:#04101c; --panel:#0d2237; --panel2:#12304a; --panel3:#17395a;
+  --line:#1d4a6b; --line2:#2a5f86;
+  --accent:#3fe08f; --accent-dim:#1e7a4f; --accent-soft:rgba(63,224,143,.15);
+  --amber:#ffc861; --text:#dbeaf5; --muted:#7fa3bd; --danger:#ff6b6b;
+  --radius:14px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0; padding:0}
+body{
+  background:radial-gradient(120% 80% at 50% 0%, #0b2136 0%, var(--bg) 45%, var(--bg2) 100%);
+  background-attachment:fixed;
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",Segoe UI,Roboto,sans-serif;
+  font-size:15px; line-height:1.45;
+  padding:0 0 40px; min-height:100vh;
+  overscroll-behavior-y:contain;
+}
+.wrap{max-width:520px; margin:0 auto; padding:0 12px}
 
+/* ---------- header ---------- */
+header{
+  padding:16px 4px 10px; display:flex; align-items:center; gap:10px; justify-content:center;
+}
+header h1{
+  margin:0; font-size:19px; letter-spacing:.32em; font-weight:600;
+  color:#eaf6ff; text-shadow:0 0 18px rgba(63,224,143,.35);
+}
+header .moon{
+  width:16px;height:16px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #fff0c9, #e8b95c);
+  box-shadow:0 0 14px rgba(255,200,97,.55);
+}
+
+/* ---------- cards ---------- */
+.card{
+  background:linear-gradient(180deg, rgba(19,50,78,.75), rgba(10,30,49,.75));
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:12px;
+  margin-bottom:12px;
+  box-shadow:0 6px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.card h2{
+  margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:.14em;
+  color:var(--muted); text-transform:uppercase; display:flex; align-items:center; gap:8px;
+}
+.card h2 .tag{margin-left:auto; font-size:11px; letter-spacing:0; color:var(--muted); font-weight:500; text-transform:none}
+
+label.fl{display:block; font-size:11px; letter-spacing:.1em; color:var(--muted); margin:0 0 5px 2px; font-weight:600}
+
+textarea, input[type=text]{
+  width:100%; background:#08192a; color:var(--text);
+  border:1px solid var(--line); border-radius:10px;
+  padding:10px 11px; font-size:16px; font-family:inherit; resize:vertical;
+  outline:none; transition:border-color .15s, box-shadow .15s;
+}
+textarea:focus, input[type=text]:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+textarea::placeholder,input::placeholder{color:#4a6e8a}
+#morseOut{
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  letter-spacing:.06em; color:var(--accent); min-height:58px; line-height:1.6;
+}
+#textIn{min-height:56px}
+
+.row{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.row.tight{gap:6px}
+.spacer{flex:1}
+
+button{
+  font-family:inherit; font-size:14px; font-weight:600; color:var(--text);
+  background:var(--panel2); border:1px solid var(--line2); border-radius:10px;
+  padding:9px 13px; cursor:pointer; transition:.13s; touch-action:manipulation;
+}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.4; cursor:default}
+button.primary{
+  background:linear-gradient(180deg,#2fbe78,#1d8d58); border-color:#3fe08f; color:#04160d;
+  box-shadow:0 0 18px rgba(63,224,143,.28);
+}
+button.ghost{background:transparent}
+button.on{background:linear-gradient(180deg,#2fbe78,#1d8d58); border-color:#3fe08f; color:#04160d}
+button.sm{padding:6px 10px; font-size:12.5px; font-weight:600}
+button.danger.on{background:linear-gradient(180deg,#e05555,#a83333); border-color:#ff6b6b; color:#fff}
+
+.seg{display:flex; background:#08192a; border:1px solid var(--line); border-radius:11px; padding:3px; gap:3px; width:100%}
+.seg button{flex:1; background:transparent; border:none; border-radius:8px; padding:9px 4px; font-size:13px; color:var(--muted)}
+.seg button.on{background:var(--panel3); color:var(--accent); box-shadow:inset 0 0 0 1px var(--line2)}
+
+/* sliders */
+.ctl{display:flex; align-items:center; gap:10px; margin-top:9px}
+.ctl .name{font-size:11.5px; color:var(--muted); width:52px; flex:none; letter-spacing:.04em}
+.ctl .val{font-size:11.5px; color:var(--accent); width:64px; flex:none; text-align:right; font-variant-numeric:tabular-nums}
+input[type=range]{
+  -webkit-appearance:none; appearance:none; flex:1; height:22px; background:transparent; outline:none; margin:0;
+}
+input[type=range]::-webkit-slider-runnable-track{height:4px; background:var(--line); border-radius:2px}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:18px; height:18px; margin-top:-7px; border-radius:50%;
+  background:var(--accent); border:2px solid #06202f; box-shadow:0 0 10px rgba(63,224,143,.6);
+}
+input[type=range]::-moz-range-track{height:4px; background:var(--line); border-radius:2px}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid #06202f}
+
+/* ---------- decode readout ---------- */
+.readout{
+  display:flex; align-items:center; gap:10px; margin-bottom:10px;
+  background:#08192a; border:1px solid var(--line); border-radius:11px; padding:9px 11px;
+}
+.lamp{
+  width:16px;height:16px;border-radius:50%; flex:none;
+  background:#123; border:1px solid var(--line2); transition:.05s;
+}
+.lamp.on{background:var(--accent); box-shadow:0 0 16px 3px rgba(63,224,143,.75); border-color:var(--accent)}
+#chips{
+  flex:1; min-height:22px; display:flex; align-items:center; gap:7px; flex-wrap:wrap;
+  font-family:ui-monospace,Menlo,monospace; color:var(--accent); font-size:19px; letter-spacing:.08em;
+}
+#chips .sym{animation:pop .18s ease-out}
+@keyframes pop{from{opacity:0; transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+#chips .hint{font-size:12px; color:#3c6480; letter-spacing:0; font-family:inherit}
+.charbox{
+  flex:none; min-width:46px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+  font-size:22px; font-weight:700; color:var(--amber);
+  background:var(--panel); border:1px solid var(--line2);
+}
+.charbox.flash{animation:flash .45s ease-out}
+@keyframes flash{0%{background:var(--accent); color:#04160d; box-shadow:0 0 22px rgba(63,224,143,.7)}100%{background:var(--panel); color:var(--amber)}}
+
+#decoded{
+  margin-top:10px; background:#08192a; border:1px solid var(--line); border-radius:11px;
+  padding:10px 11px; min-height:44px; font-size:17px; letter-spacing:.06em; word-break:break-word;
+  color:#eaf6ff;
+}
+#decoded .cursor{display:inline-block; width:9px; color:var(--accent); animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+#decoded:empty::before{content:"해독된 글자가 여기에 나타납니다"; color:#3c6480; font-size:13px; letter-spacing:0}
+
+/* ---------- tree ---------- */
+.treewrap{
+  position:relative; background:
+    radial-gradient(90% 70% at 50% 0%, rgba(30,90,130,.28), transparent 70%), #061420;
+  border:1px solid var(--line); border-radius:12px; padding:4px 2px 2px; overflow:hidden;
+}
+.treewrap .stars{position:absolute; inset:0; pointer-events:none; opacity:.5}
+svg#tree{display:block; width:100%; height:auto; touch-action:manipulation}
+svg#tree text{font-family:inherit; font-weight:700; pointer-events:none; user-select:none}
+.edge{stroke:var(--line2); stroke-width:1.6; fill:none; opacity:.55}
+.edge.hot{stroke:var(--accent); stroke-width:2.6; opacity:1; filter:url(#glow)}
+.emark{fill:#4d7fa3; opacity:.75}
+.edge.hot + .emark, .emark.hot{fill:var(--accent); opacity:1}
+.nd circle{fill:var(--panel2); stroke:var(--line2); stroke-width:1.5; transition:.12s}
+.nd text{fill:#bcd6e8; font-size:13px; transition:.12s}
+.nd.path circle{fill:#1a4a6b; stroke:#4fb98a}
+.nd.path text{fill:#dff5e9}
+.nd.cur circle{fill:var(--accent); stroke:#c9ffe4; stroke-width:2; filter:url(#glow)}
+.nd.cur text{fill:#04160d; font-size:14px}
+.nd.done circle{animation:ndone .5s ease-out}
+@keyframes ndone{0%{fill:#ffe9b0; stroke:#fff}100%{fill:var(--panel2); stroke:var(--line2)}}
+.root circle{fill:#0d2237; stroke:var(--line2)}
+.root.cur circle{fill:#123a55; stroke:var(--accent)}
+.ant{stroke:var(--line2); stroke-width:1.4; fill:none}
+.ant.hot{stroke:var(--accent)}
+
+.legend{display:flex; gap:14px; flex-wrap:wrap; font-size:11px; color:var(--muted); margin-top:9px; padding:0 2px}
+.legend span{display:inline-flex; align-items:center; gap:5px}
+.legend i{display:inline-block; background:var(--accent); border-radius:2px}
+.legend i.dot{width:6px;height:6px;border-radius:50%}
+.legend i.dash{width:15px;height:5px}
+
+/* ---------- tap key ---------- */
+#tapPad{
+  width:100%; height:104px; border-radius:14px; margin-top:4px;
+  background:linear-gradient(180deg,#123c58,#0b2437); border:1px solid var(--line2);
+  color:var(--muted); font-size:14px; font-weight:600; letter-spacing:.06em;
+  display:flex; align-items:center; justify-content:center; flex-direction:column; gap:4px;
+  touch-action:none; user-select:none; -webkit-user-select:none;
+}
+#tapPad.down{background:linear-gradient(180deg,#2fbe78,#1d8d58); color:#04160d; box-shadow:0 0 26px rgba(63,224,143,.4) inset}
+#tapPad small{font-size:11px; font-weight:500; opacity:.8; letter-spacing:0}
+
+.hint{font-size:11.5px; color:var(--muted); margin-top:8px; line-height:1.5}
+.hint b{color:#a9c8dd; font-weight:600}
+#micBar{height:6px; background:#08192a; border:1px solid var(--line); border-radius:4px; overflow:hidden; margin-top:9px}
+#micBar > i{display:block; height:100%; width:0%; background:linear-gradient(90deg,#1d8d58,var(--accent)); transition:width .05s}
+#micInfo{font-size:11.5px; color:var(--muted); margin-top:6px; font-variant-numeric:tabular-nums}
+
+/* reference table */
+details.ref{margin-top:2px}
+details.ref summary{
+  cursor:pointer; list-style:none; font-size:12px; letter-spacing:.12em; color:var(--muted);
+  font-weight:700; text-transform:uppercase; padding:2px;
+}
+details.ref summary::-webkit-details-marker{display:none}
+details.ref summary::after{content:" ▾"; color:var(--accent)}
+details.ref[open] summary::after{content:" ▴"}
+.reftable{display:grid; grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:5px; margin-top:10px}
+.reftable div{
+  background:#08192a; border:1px solid var(--line); border-radius:8px; padding:6px 7px;
+  font-size:12px; display:flex; gap:7px; align-items:baseline;
+}
+.reftable b{color:var(--amber); font-size:13px; width:14px; flex:none}
+.reftable span{font-family:ui-monospace,Menlo,monospace; color:var(--accent); letter-spacing:.05em; font-size:12px}
+.rules{font-size:12px; color:var(--muted); line-height:1.7; margin:8px 0 0; padding-left:18px}
+.rules li::marker{color:var(--accent)}
+
+#flash{position:fixed; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:99; transition:opacity .03s}
+#flash.on{opacity:.9}
+footer{text-align:center; font-size:11px; color:#3c6480; padding:10px 0 0}
+</style>
+</head>
+<body>
+<div id="flash"></div>
+<div class="wrap">
+
+<header>
+  <h1>MORSE&nbsp;CODE</h1><div class="moon"></div>
+</header>
+
+<!-- ======== 상단: 입력 ======== -->
+<section class="card">
+  <h2>입력 <span class="tag" id="wpmTag">12 WPM · 100 ms</span></h2>
+
+  <label class="fl" for="textIn">텍스트 (A–Z, 0–9, 문장부호)</label>
+  <textarea id="textIn" rows="2" placeholder="예: SOS KOREA COAST GUARD" autocapitalize="characters" autocomplete="off" spellcheck="false"></textarea>
+
+  <label class="fl" for="morseOut" style="margin-top:10px">모르스 부호 ( · − / 는 낱말 사이 )</label>
+  <textarea id="morseOut" rows="2" placeholder="... --- ...   /   ---" autocomplete="off" spellcheck="false"></textarea>
+
+  <div class="row" style="margin-top:10px">
+    <button class="primary" id="btnPlay" style="flex:1">▶ 재생</button>
+    <button id="btnStop" disabled>■ 정지</button>
+    <button class="ghost sm" id="btnCopy">복사</button>
+    <button class="ghost sm" id="btnClear">지우기</button>
+  </div>
+
+  <div class="ctl">
+    <span class="name">속도</span>
+    <input type="range" id="wpm" min="5" max="30" step="1" value="12">
+    <span class="val" id="wpmVal">12 WPM</span>
+  </div>
+  <details class="ref" style="margin-top:8px">
+    <summary>소리 · 진동 설정</summary>
+    <div class="ctl">
+      <span class="name">음높이</span>
+      <input type="range" id="freq" min="300" max="1000" step="10" value="600">
+      <span class="val" id="freqVal">600 Hz</span>
+    </div>
+    <div class="ctl">
+      <span class="name">음량</span>
+      <input type="range" id="vol" min="0" max="100" step="1" value="35">
+      <span class="val" id="volVal">35 %</span>
+    </div>
+    <div class="row tight" style="margin-top:10px">
+      <button class="sm ghost on" id="tgSound">🔊 소리</button>
+      <button class="sm ghost" id="tgVib">📳 진동</button>
+      <button class="sm ghost" id="tgFlash">💡 화면섬광</button>
+    </div>
+  </details>
+</section>
+
+<!-- ======== 하단: 트리 해독 ======== -->
+<section class="card">
+  <h2>해독 트리 <span class="tag" id="treeTag">대기</span></h2>
+
+  <div class="readout">
+    <div class="lamp" id="lamp"></div>
+    <div id="chips"><span class="hint">신호를 기다리는 중…</span></div>
+    <div class="charbox" id="charbox">–</div>
+  </div>
+
+  <div class="treewrap">
+    <svg id="tree" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot"></i> 도트 (1u)</span>
+    <span><i class="dash"></i> 대시 (3u)</span>
+    <span style="color:#7fa3bd">글자를 누르면 입력창에 추가됩니다</span>
+  </div>
+
+  <div id="decoded"></div>
+  <div class="row tight" style="margin-top:8px">
+    <button class="sm ghost" id="btnResetDec">해독 초기화</button>
+    <button class="sm ghost" id="btnToInput">↑ 입력창으로 보내기</button>
+  </div>
+</section>
+
+<!-- ======== 신호 입력 모드 ======== -->
+<section class="card">
+  <h2>신호 입력</h2>
+  <div class="seg" id="modeSeg">
+    <button data-mode="play" class="on">▶ 재생 해독</button>
+    <button data-mode="tap">⌨ 전건(탭)</button>
+    <button data-mode="mic">🎙 마이크</button>
+  </div>
+  <div class="row tight" id="autoRow" style="margin-top:10px" hidden>
+    <button class="sm ghost on" id="tgAuto">⚙ 자동 속도</button>
+    <span class="hint" style="margin:0">켜면 보내는 사람의 속도에 맞춰 1u를 스스로 맞춥니다.</span>
+  </div>
+
+  <div id="panelPlay" class="hint">
+    위에서 <b>재생</b>을 누르면 소리가 나면서 아래 트리를 따라 한 칸씩 내려갑니다.
+    가로로 가면 그 방향의 부호, 세로로 떨어지면 반대 부호입니다.
+  </div>
+
+  <div id="panelTap" hidden>
+    <div id="tapPad">눌러서 송신<small>짧게 = 도트( · ) · 길게 = 대시( − )</small></div>
+    <div class="hint">기준 단위 1u = <b id="tapUnit">100 ms</b>. 손을 떼고 3u 쉬면 글자가, 7u 쉬면 낱말이 끊깁니다.</div>
+  </div>
+
+  <div id="panelMic" hidden>
+    <div class="row"><button class="primary" id="btnMic" style="flex:1">🎙 마이크 시작</button></div>
+    <div id="micBar"><i></i></div>
+    <div id="micInfo">대기 중 — 700 Hz 안팎의 삐 소리를 들려주세요.</div>
+    <div class="hint">주변이 조용할수록 정확합니다. 처음 1초 동안 잡음 바닥을 측정한 뒤 해독을 시작합니다.</div>
+  </div>
+</section>
+
+<!-- ======== 참고표 ======== -->
+<section class="card">
+  <details class="ref">
+    <summary>국제 모르스 부호표 · 길이 규칙</summary>
+    <ol class="rules">
+      <li>도트( · )의 길이는 1단위(1u)입니다.</li>
+      <li>대시( − )는 3단위입니다.</li>
+      <li>한 글자 안의 부호 사이 간격은 1단위입니다.</li>
+      <li>글자와 글자 사이는 3단위입니다.</li>
+      <li>낱말과 낱말 사이는 7단위입니다.</li>
+    </ol>
+    <div class="reftable" id="refTable"></div>
+  </details>
+</section>
+
+<footer>모르스 부호 해석기 · 오프라인에서도 동작합니다</footer>
+</div>
+
+<script>
+"use strict";
+/* =====================================================================
+   1. 모르스 부호표
+   ===================================================================== */
+const MORSE = {
+  A:".-",   B:"-...", C:"-.-.", D:"-..",  E:".",    F:"..-.", G:"--.",
+  H:"....", I:"..",   J:".---", K:"-.-",  L:".-..", M:"--",   N:"-.",
+  O:"---",  P:".--.", Q:"--.-", R:".-.",  S:"...",  T:"-",    U:"..-",
+  V:"...-", W:".--",  X:"-..-", Y:"-.--", Z:"--..",
+  "0":"-----","1":".----","2":"..---","3":"...--","4":"....-",
+  "5":".....","6":"-....","7":"--...","8":"---..","9":"----.",
+  ".":".-.-.-", ",":"--..--", "?":"..--..", "'":".----.", "!":"-.-.--",
+  "/":"-..-.",  "(":"-.--.",  ")":"-.--.-", "&":".-...",  ":":"---...",
+  ";":"-.-.-.", "=":"-...-",  "+":".-.-.",  "-":"-....-", "_":"..--.-",
+  '"':".-..-.", "$":"...-..-","@":".--.-."
+};
+const CODE2CHAR = {};
+for (const [ch, code] of Object.entries(MORSE)) CODE2CHAR[code] = ch;
+
+const DOT = "·", DASH = "−";           // 화면 표시용 기호
+const pretty = c => c.replace(/\./g, DOT).replace(/-/g, DASH);
+const plain  = s => s.replace(/[·•.]/g, ".").replace(/[−–—_]/g, "-");
+
+/* =====================================================================
+   2. 트리 배치 — 첨부 사진과 같은 형상
+      · 왼쪽 절반: 가로 = 대시, 아래로 떨어짐 = 도트
+      · 오른쪽 절반: 가로 = 도트, 아래로 떨어짐 = 대시
+      · 짧은 가지부터 위쪽 행에 채워 넣어 8열 × 7행으로 압축
+   ===================================================================== */
+const LETTERS = {};                       // code -> 알파벳 (깊이 4까지)
+for (const [ch, code] of Object.entries(MORSE)) if (/^[A-Z]$/.test(ch)) LETTERS[code] = ch;
+
+const has  = c => Object.prototype.hasOwnProperty.call(LETTERS, c);
+const dirOf = c => (c[0] === "-" ? -1 : 1);              // 왼쪽/오른쪽 절반
+const hChild = c => c + (dirOf(c) < 0 ? "-" : ".");      // 가로로 이어지는 자식
+const dChild = c => c + (dirOf(c) < 0 ? "." : "-");      // 아래로 떨어지는 자식
+
+function subtreeSize(c){ return has(c) ? 1 + subtreeSize(c + ".") + subtreeSize(c + "-") : 0; }
+
+function buildLayout(){
+  const pos = { "": { row: 0, col: 0 } };                // 루트 = 안테나 자리
+  const occ = new Set(["0,0"]);
+  const key = (r, c) => r + "," + c;
+
+  const makeRun = start => { const r = [start]; let c = start;
+    while (has(hChild(c))) { c = hChild(c); r.push(c); } return r; };
+
+  const placeRun = (run, row, col0, dir) => run.forEach((code, i) => {
+    const col = col0 + dir * i; pos[code] = { row, col }; occ.add(key(row, col));
+  });
+
+  const fits = (run, row, col0, dir, par) => {
+    for (let i = 0; i < run.length; i++) if (occ.has(key(row, col0 + dir * i))) return false;
+    if (par) for (let r = par.row + 1; r < row; r++) if (occ.has(key(r, par.col))) return false;
+    return true;
+  };
+
+  const pending = [];
+  const addPending = (run, dir) => run.forEach(code => {
+    const d = dChild(code); if (has(d)) pending.push({ start: d, dir, parent: code });
+  });
+
+  // 최상단 행: 왼쪽으로 T M O, 오른쪽으로 E I S H
+  for (const [start, dir] of [["-", -1], [".", 1]]) {
+    const run = makeRun(start);
+    placeRun(run, 0, dir, dir);
+    addPending(run, dir);
+  }
+
+  for (let row = 1; pending.length && row < 40; row++) {
+    const ready = pending.filter(p => pos[p.parent]).sort((a, b) => subtreeSize(a.start) - subtreeSize(b.start));
+    for (const p of ready) {
+      const par = pos[p.parent];
+      if (row <= par.row) continue;
+      const run = makeRun(p.start);
+      if (!fits(run, row, par.col, p.dir, par)) continue;
+      placeRun(run, row, par.col, p.dir);
+      addPending(run, p.dir);
+      pending.splice(pending.indexOf(p), 1);
+    }
+  }
+  return pos;
+}
+
+/* ---------- SVG 그리기 ---------- */
+const CW = 44, CH = 52, PAD = 14, TOP = 20;
+const POS = buildLayout();
+const nodeEls = {}, edgeEls = {}, markEls = {};
+let treeW = 0, treeH = 0;
+
+function renderTree(){
+  const svg = document.getElementById("tree");
+  const cols = Object.values(POS).map(p => p.col), rows = Object.values(POS).map(p => p.row);
+  const minCol = Math.min(...cols), maxCol = Math.max(...cols), maxRow = Math.max(...rows);
+  treeW = (maxCol - minCol + 1) * CW + PAD * 2;
+  treeH = (maxRow + 1) * CH + PAD * 2 + TOP;
+  svg.setAttribute("viewBox", `0 0 ${treeW} ${treeH}`);
+  svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+  const X = col => PAD + (col - minCol) * CW + CW / 2;
+  const Y = row => PAD + TOP + row * CH + CH / 2;
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (n, a = {}) => { const e = document.createElementNS(NS, n);
+    for (const k in a) e.setAttribute(k, a[k]); return e; };
+
+  svg.innerHTML =
+    '<defs><filter id="glow" x="-70%" y="-70%" width="240%" height="240%">' +
+    '<feGaussianBlur stdDeviation="2.6" result="b"/>' +
+    '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
+
+  // 별 배경
+  const stars = el("g", { opacity: ".55" });
+  let seed = 7;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  for (let i = 0; i < 46; i++)
+    stars.appendChild(el("circle", { cx: (rnd() * treeW).toFixed(1), cy: (rnd() * treeH).toFixed(1),
+      r: (rnd() * 1.1 + .3).toFixed(2), fill: "#9fd6ff", opacity: (rnd() * .55 + .12).toFixed(2) }));
+  svg.appendChild(stars);
+
+  // 안테나 (루트 표시)
+  const rx = X(0), ry = Y(0);
+  const ant = el("g", { class: "ant", id: "antenna" });
+  ant.appendChild(el("path", { d: `M${rx} ${ry - 15} L${rx} ${ry - 30}` }));
+  ant.appendChild(el("path", { d: `M${rx - 9} ${ry - 34} L${rx} ${ry - 24} L${rx + 9} ${ry - 34}` }));
+  svg.appendChild(ant);
+
+  const gEdges = el("g"), gMarks = el("g"), gNodes = el("g");
+
+  Object.keys(POS).forEach(code => {
+    if (code === "") return;
+    const p = POS[code], q = POS[code.slice(0, -1)];
+    if (!q) return;
+    const x1 = X(q.col), y1 = Y(q.row), x2 = X(p.col), y2 = Y(p.row);
+    const line = el("path", { class: "edge", d: `M${x1} ${y1} L${x2} ${y2}` });
+    gEdges.appendChild(line); edgeEls[code] = line;
+
+    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2, isDot = code.slice(-1) === ".";
+    let m;
+    if (isDot) m = el("circle", { class: "emark", cx: mx, cy: my, r: 2.7 });
+    else if (y1 === y2) m = el("rect", { class: "emark", x: mx - 6, y: my - 1.7, width: 12, height: 3.4, rx: 1.5 });
+    else m = el("rect", { class: "emark", x: mx - 1.7, y: my - 6, width: 3.4, height: 12, rx: 1.5 });
+    gMarks.appendChild(m); markEls[code] = m;
+  });
+
+  Object.keys(POS).forEach(code => {
+    const p = POS[code], x = X(p.col), y = Y(p.row);
+    const g = el("g", { class: code === "" ? "nd root" : "nd", "data-code": code });
+    g.appendChild(el("circle", { cx: x, cy: y, r: code === "" ? 11 : 14 }));
+    const t = el("text", { x, y: y + 4.6, "text-anchor": "middle" });
+    t.textContent = code === "" ? "" : LETTERS[code];
+    g.appendChild(t);
+    if (code !== "") g.style.cursor = "pointer";
+    g.addEventListener("click", () => { if (code) insertChar(LETTERS[code]); });
+    gNodes.appendChild(g); nodeEls[code] = g;
+  });
+
+  svg.appendChild(gEdges); svg.appendChild(gMarks); svg.appendChild(gNodes);
+}
+
+/* ---------- 트리 하이라이트 ---------- */
+let curPath = "";
+function highlightPath(code){
+  curPath = code;
+  Object.keys(nodeEls).forEach(c => nodeEls[c].classList.remove("path", "cur"));
+  Object.keys(edgeEls).forEach(c => { edgeEls[c].classList.remove("hot"); markEls[c].classList.remove("hot"); });
+  document.getElementById("antenna").classList.toggle("hot", code.length > 0);
+  if (nodeEls[""]) nodeEls[""].classList.add(code ? "path" : "cur");
+  for (let i = 1; i <= code.length; i++) {
+    const c = code.slice(0, i);
+    if (!nodeEls[c]) break;                       // 숫자·부호는 깊이 5 이상 → 트리 밖
+    nodeEls[c].classList.add(i === code.length ? "cur" : "path");
+    if (edgeEls[c]) { edgeEls[c].classList.add("hot"); markEls[c].classList.add("hot"); }
+  }
+}
+function flashNode(code){
+  const n = nodeEls[code];
+  if (!n) return;
+  n.classList.add("done");
+  setTimeout(() => n.classList.remove("done"), 500);
+}
+</script>
+
+<script>
+"use strict";
+/* =====================================================================
+   3. 변환 (텍스트 ⇄ 모르스)
+   ===================================================================== */
+function textToMorse(t){
+  const out = [];
+  for (const raw of t.toUpperCase()) {
+    if (/\s/.test(raw)) { if (out.length && out[out.length - 1] !== "/") out.push("/"); continue; }
+    const c = MORSE[raw];
+    if (c) out.push(c);
+  }
+  while (out[0] === "/") out.shift();
+  while (out.length && out[out.length - 1] === "/") out.pop();
+  return out.map(t2 => (t2 === "/" ? "/" : pretty(t2))).join(" ");
+}
+function morseToText(m){
+  const toks = plain(m).replace(/\//g, " / ").trim().split(/\s+/).filter(Boolean);
+  let s = "";
+  for (const t of toks) {
+    if (t === "/") { if (s && !s.endsWith(" ")) s += " "; continue; }
+    s += CODE2CHAR[t] || "◇";
+  }
+  return s;
+}
+
+/* =====================================================================
+   4. 해독 상태기 — 재생 / 전건 / 마이크가 모두 여기로 들어옵니다
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const chipsEl = $("chips"), charEl = $("charbox"), decEl = $("decoded"), lampEl = $("lamp");
+
+const DEC = {
+  code: "", text: "",
+  symbol(s){
+    this.code += s;
+    highlightPath(this.code);
+    this.chips();
+  },
+  endLetter(){
+    if (!this.code) return;
+    const ch = CODE2CHAR[this.code];
+    flashNode(this.code);
+    this.text += ch || "◇";
+    charEl.textContent = ch || "?";
+    charEl.classList.remove("flash"); void charEl.offsetWidth; charEl.classList.add("flash");
+    this.code = "";
+    this.chips();
+    this.paint();
+    setTimeout(() => { if (!this.code) highlightPath(""); }, 260);
+  },
+  endWord(){
+    this.endLetter();
+    if (this.text && !this.text.endsWith(" ")) { this.text += " "; this.paint(); }
+  },
+  reset(){
+    this.code = ""; this.text = "";
+    charEl.textContent = "–"; charEl.classList.remove("flash");
+    this.chips(); this.paint(); highlightPath("");
+  },
+  chips(){
+    if (!this.code) { chipsEl.innerHTML = '<span class="hint">신호를 기다리는 중…</span>'; return; }
+    let h = this.code.split("").map(c => `<span class="sym">${c === "." ? DOT : DASH}</span>`).join("");
+    if (this.code.length > 4) h += '<span class="hint">숫자·문장부호는 5단계 이하 — 트리 밖</span>';
+    chipsEl.innerHTML = h;
+  },
+  paint(){ decEl.innerHTML = this.text.replace(/ /g, "&nbsp;") + '<span class="cursor">▍</span>'; }
+};
+
+function setLamp(on){
+  lampEl.classList.toggle("on", on);
+  if (opt.flash) $("flash").classList.toggle("on", on);
+}
+function setTag(t){ $("treeTag").textContent = t; }
+
+/* =====================================================================
+   5. 설정값
+   ===================================================================== */
+const opt = { wpm: 12, freq: 600, vol: 0.35, sound: true, vib: false, flash: false, auto: true };
+const unitMs = () => 1200 / opt.wpm;              // PARIS 기준 1단위
+
+/* =====================================================================
+   6. 재생 (오디오 스케줄 + 트리 애니메이션)
+   ===================================================================== */
+let actx = null, playing = false, rafId = 0, osc = null, gain = null;
+
+function buildTimeline(morse){
+  const toks = plain(morse).replace(/\//g, " / ").trim().split(/\s+/).filter(Boolean);
+  const ev = [];
+  let u = 0;                                          // 누적 단위
+  const push = (o, len) => { ev.push(Object.assign(o, { s: u, e: u + len })); u += len; };
+  toks.forEach((tok, i) => {
+    if (tok === "/") { push({ type: "gap", kind: "word" }, 7); return; }
+    const syms = tok.split("");
+    syms.forEach((sy, j) => {
+      if (sy !== "." && sy !== "-") return;
+      push({ type: "tone", sym: sy }, sy === "." ? 1 : 3);
+      if (j < syms.length - 1) push({ type: "gap", kind: "intra" }, 1);
+    });
+    const next = toks[i + 1];
+    if (next && next !== "/") push({ type: "gap", kind: "letter" }, 3);
+  });
+  push({ type: "gap", kind: "letter" }, 3);           // 마지막 글자 확정
+  return ev;
+}
+
+function stopPlay(){
+  playing = false;
+  cancelAnimationFrame(rafId);
+  if (osc) { try { osc.stop(); } catch (e) {} osc.disconnect(); osc = null; }
+  if (gain) { gain.disconnect(); gain = null; }
+  if (navigator.vibrate) try { navigator.vibrate(0); } catch (e) {}
+  setLamp(false);
+  $("btnPlay").disabled = false; $("btnStop").disabled = true;
+  $("btnPlay").textContent = "▶ 재생";
+  setTag("대기");
+}
+
+function play(){
+  const morse = plain($("morseOut").value);
+  if (!/[.\-]/.test(morse)) { $("textIn").focus(); return; }
+  stopPlay();
+  setMode("play");
+  DEC.reset();
+
+  const ev = buildTimeline(morse), U = unitMs() / 1000;
+  const total = ev[ev.length - 1].e * U;
+
+  let clock;                                          // 초 단위 경과시간
+  if (opt.sound) {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+    gain = actx.createGain(); gain.gain.value = 0; gain.connect(actx.destination);
+    osc = actx.createOscillator(); osc.type = "sine";
+    osc.frequency.value = opt.freq; osc.connect(gain);
+    const t0 = actx.currentTime + 0.12, R = 0.005;
+    for (const e of ev) {
+      if (e.type !== "tone") continue;
+      const s = t0 + e.s * U, en = t0 + e.e * U;
+      gain.gain.setValueAtTime(0, s);
+      gain.gain.linearRampToValueAtTime(opt.vol, s + R);
+      gain.gain.setValueAtTime(opt.vol, Math.max(s + R, en - R));
+      gain.gain.linearRampToValueAtTime(0, en);
+    }
+    osc.start(t0); osc.stop(t0 + total + 0.15);
+    clock = () => actx.currentTime - t0;
+  } else {
+    const p0 = performance.now() + 120;
+    clock = () => (performance.now() - p0) / 1000;
+  }
+
+  if (opt.vib && navigator.vibrate) {
+    const pat = []; let last = 0;
+    for (const e of ev) if (e.type === "tone") { pat.push(Math.round((e.s - last) * U * 1000), Math.round((e.e - e.s) * U * 1000)); last = e.e; }
+    if (pat[0] === 0) pat.shift();
+    try { navigator.vibrate(pat); } catch (e) {}
+  }
+
+  playing = true;
+  $("btnPlay").disabled = true; $("btnStop").disabled = false;
+  setTag("재생 중 — 해독");
+
+  let i = 0;
+  const step = () => {
+    if (!playing) return;
+    const t = clock();
+    while (i < ev.length && ev[i].e * U <= t) {
+      const e = ev[i++];
+      if (e.type === "tone") DEC.symbol(e.sym);
+      else if (e.kind === "letter") DEC.endLetter();
+      else if (e.kind === "word") DEC.endWord();
+    }
+    const cur = ev.find(e => e.type === "tone" && e.s * U <= t && t < e.e * U);
+    setLamp(!!cur);
+    if (t > total + 0.25) { stopPlay(); return; }
+    rafId = requestAnimationFrame(step);
+  };
+  rafId = requestAnimationFrame(step);
+}
+
+/* =====================================================================
+   7. 실시간 신호 해독기 (전건 · 마이크 공용)
+   ===================================================================== */
+const KEY = {
+  down: false, tDown: 0, tUp: 0, durs: [], letterDone: true, wordDone: true, tickId: 0,
+  unit(){
+    if (opt.auto && this.durs.length >= 3) {
+      const d = [...this.durs].sort((a, b) => a - b);
+      const mid = (d[0] + d[d.length - 1]) / 2;
+      const shorts = d.filter(x => x <= mid);
+      if (shorts.length) {
+        const m = shorts.reduce((a, b) => a + b, 0) / shorts.length;
+        return Math.max(25, Math.min(900, m));
+      }
+    }
+    return unitMs();
+  },
+  press(t){
+    if (this.down) return;
+    this.down = true; this.tDown = t; setLamp(true);
+  },
+  release(t){
+    if (!this.down) return;
+    this.down = false; setLamp(false);
+    const d = t - this.tDown; this.tUp = t;
+    if (d < 15) return;                                // 오검출 방지
+    const u0 = this.unit();
+    const sym = d >= 2 * u0 ? "-" : ".";
+    this.durs.push(d); if (this.durs.length > 14) this.durs.shift();
+    DEC.symbol(sym);
+    this.letterDone = false; this.wordDone = false;
+    this.info();
+  },
+  tick(){
+    if (this.down) return;
+    const u = this.unit(), s = performance.now() - this.tUp;
+    if (!this.letterDone && s > 2.2 * u) { DEC.endLetter(); this.letterDone = true; }   // 1u와 3u의 중간
+    if (!this.wordDone && this.letterDone && s > 5 * u) { DEC.endWord(); this.wordDone = true; }  // 3u와 7u의 중간
+  },
+  info(){
+    const u = Math.round(this.unit());
+    $("micInfo").textContent = `수신 중 · 1u ≈ ${u} ms (약 ${Math.round(1200 / u)} WPM)`;
+    $("tapUnit").textContent = `${u} ms`;
+  },
+  start(){ this.durs = []; this.letterDone = true; this.wordDone = true; this.tUp = performance.now();
+           clearInterval(this.tickId); this.tickId = setInterval(() => this.tick(), 25); },
+  stop(){ clearInterval(this.tickId); this.tickId = 0; this.down = false; setLamp(false); }
+};
+</script>
+
+<script>
+"use strict";
+/* =====================================================================
+   8. 마이크 수신 — 톤을 감지해 같은 해독기로 보냅니다
+   ===================================================================== */
+const MIC = {
+  stream: null, ctx: null, an: null, buf: null, raf: 0,
+  floor: -95, sig: -160, active: false, state: false, since: 0, calibUntil: 0,
+  async start(){
+    try {
+      this.stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+      });
+    } catch (e) {
+      $("micInfo").textContent = "마이크 권한이 필요합니다 (HTTPS 또는 localhost에서만 동작).";
+      return false;
+    }
+    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (this.ctx.state === "suspended") await this.ctx.resume();
+    const src = this.ctx.createMediaStreamSource(this.stream);
+    this.an = this.ctx.createAnalyser();
+    this.an.fftSize = 2048; this.an.smoothingTimeConstant = 0.05;
+    src.connect(this.an);
+    this.buf = new Float32Array(this.an.frequencyBinCount);
+    this.floor = -95; this.sig = -160; this.state = false; this.active = true;
+    this.calibUntil = performance.now() + 900;
+    KEY.start();
+    setTag("마이크 수신 중");
+    $("micInfo").textContent = "잡음 바닥 측정 중…";
+    this.loop();
+    return true;
+  },
+  loop(){
+    if (!this.active) return;
+    this.an.getFloatFrequencyData(this.buf);
+    const sr = this.ctx.sampleRate, n = this.an.fftSize;
+    const lo = Math.floor(300 * n / sr), hi = Math.ceil(1400 * n / sr);
+    let peak = -160;
+    for (let i = lo; i <= hi && i < this.buf.length; i++) if (this.buf[i] > peak) peak = this.buf[i];
+    if (!(peak > -160)) peak = -160;                  // 완전한 무음 대비
+
+    const now = performance.now();
+    const calibrating = now < this.calibUntil;
+    // 잡음 바닥: 신호가 없을 때만 천천히 따라감 (디지털 무음까지 내려가지 않도록 하한)
+    if (calibrating || !this.state) this.floor = Math.max(-120, this.floor * 0.96 + peak * 0.04);
+    // 신호 크기: 즉시 올라가고 천천히 내려감
+    this.sig = peak > this.sig ? peak : this.sig * 0.995 + peak * 0.005;
+
+    // 문턱값은 잡음 바닥과 신호 크기의 사이 — 부호 사이의 짧은 무음도 놓치지 않습니다
+    const base = Math.max(this.floor + 9, this.sig - 15);
+    const lvl = Math.max(0, Math.min(100, (peak - this.floor) / Math.max(20, this.sig - this.floor) * 100));
+    $("micBar").firstElementChild.style.width = lvl.toFixed(0) + "%";
+
+    if (!calibrating) {
+      const want = this.state ? peak > base - 3 : peak > base + 3;   // 이력(히스테리시스)
+      if (want !== this.state) {
+        if (!this.since) this.since = now;
+        if (now - this.since > 22) {                  // 채터링 방지
+          this.state = want; this.since = 0;
+          if (want) KEY.press(now); else KEY.release(now);
+        }
+      } else this.since = 0;
+    } else if (now >= this.calibUntil - 20) {
+      $("micInfo").textContent = "수신 대기 — 삐 소리를 들려주세요.";
+    }
+    this.raf = requestAnimationFrame(() => this.loop());
+  },
+  stop(){
+    this.active = false; cancelAnimationFrame(this.raf);
+    if (this.stream) this.stream.getTracks().forEach(t => t.stop());
+    if (this.ctx) { try { this.ctx.close(); } catch (e) {} }
+    this.stream = null; this.ctx = null;
+    KEY.stop();
+    $("micBar").firstElementChild.style.width = "0%";
+    $("btnMic").textContent = "🎙 마이크 시작"; $("btnMic").classList.add("primary");
+    $("micInfo").textContent = "정지됨.";
+    setTag("대기");
+  }
+};
+
+/* =====================================================================
+   9. 화면 조작
+   ===================================================================== */
+let syncing = false;
+function syncFromText(){
+  if (syncing) return; syncing = true;
+  $("morseOut").value = textToMorse($("textIn").value);
+  syncing = false;
+}
+function syncFromMorse(){
+  if (syncing) return; syncing = true;
+  $("textIn").value = morseToText($("morseOut").value);
+  syncing = false;
+}
+function insertChar(ch){
+  $("textIn").value += ch;
+  syncFromText();
+  $("textIn").focus();
+}
+
+let mode = "play";
+function setMode(m){
+  if (m !== "mic" && MIC.active) MIC.stop();
+  if (m !== "tap") KEY.stop();
+  if (m !== "play" && playing) stopPlay();
+  mode = m;
+  document.querySelectorAll("#modeSeg button").forEach(b => b.classList.toggle("on", b.dataset.mode === m));
+  $("panelPlay").hidden = m !== "play";
+  $("panelTap").hidden  = m !== "tap";
+  $("panelMic").hidden  = m !== "mic";
+  $("autoRow").hidden   = m === "play";
+  if (m === "tap") { KEY.start(); setTag("전건 입력 대기"); }
+  else if (m === "play") setTag(playing ? "재생 중 — 해독" : "대기");
+}
+
+/* 슬라이더 */
+function bindRange(id, fmt, apply){
+  const el = $(id), out = $(id + "Val");
+  const upd = () => { const v = +el.value; apply(v); out.textContent = fmt(v); updateTags(); };
+  el.addEventListener("input", upd); upd();
+}
+function updateTags(){
+  $("wpmTag").textContent = `${opt.wpm} WPM · ${Math.round(unitMs())} ms`;
+  $("tapUnit").textContent = `${Math.round(unitMs())} ms`;
+}
+
+/* 초기화 */
+function init(){
+  renderTree();
+  DEC.reset();
+
+  bindRange("wpm",  v => `${v} WPM`, v => opt.wpm = v);
+  bindRange("freq", v => `${v} Hz`,  v => opt.freq = v);
+  bindRange("vol",  v => `${v} %`,   v => opt.vol = v / 100);
+
+  $("textIn").addEventListener("input", syncFromText);
+  $("morseOut").addEventListener("input", syncFromMorse);
+
+  $("btnPlay").addEventListener("click", play);
+  $("btnStop").addEventListener("click", stopPlay);
+  $("btnClear").addEventListener("click", () => { $("textIn").value = ""; $("morseOut").value = ""; DEC.reset(); });
+  $("btnCopy").addEventListener("click", async () => {
+    const t = $("morseOut").value;
+    try { await navigator.clipboard.writeText(t); } catch (e) { $("morseOut").select(); document.execCommand("copy"); }
+    const b = $("btnCopy"); b.textContent = "복사됨"; setTimeout(() => b.textContent = "복사", 1200);
+  });
+  $("btnResetDec").addEventListener("click", () => DEC.reset());
+  $("btnToInput").addEventListener("click", () => {
+    if (!DEC.text.trim()) return;
+    $("textIn").value = DEC.text.trim(); syncFromText();
+  });
+
+  const tg = (id, key, extra) => $(id).addEventListener("click", e => {
+    opt[key] = !opt[key]; e.currentTarget.classList.toggle("on", opt[key]);
+    if (extra) extra();
+  });
+  tg("tgSound", "sound"); tg("tgVib", "vib");
+  tg("tgFlash", "flash", () => { if (!opt.flash) $("flash").classList.remove("on"); });
+  tg("tgAuto", "auto");
+
+  document.querySelectorAll("#modeSeg button").forEach(b =>
+    b.addEventListener("click", () => setMode(b.dataset.mode)));
+
+  /* 전건(탭) */
+  const pad = $("tapPad");
+  const down = e => { e.preventDefault(); if (mode !== "tap") return;
+    pad.classList.add("down"); KEY.press(performance.now()); beep(true); };
+  const up = e => { if (mode !== "tap") return;
+    pad.classList.remove("down"); KEY.release(performance.now()); beep(false); };
+  pad.addEventListener("pointerdown", down);
+  pad.addEventListener("pointerup", up);
+  pad.addEventListener("pointercancel", up);
+  pad.addEventListener("pointerleave", up);
+  document.addEventListener("keydown", e => {
+    if (mode !== "tap" || e.code !== "Space" || e.repeat) return;
+    if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+    e.preventDefault(); pad.classList.add("down"); KEY.press(performance.now()); beep(true);
+  });
+  document.addEventListener("keyup", e => {
+    if (mode !== "tap" || e.code !== "Space") return;
+    pad.classList.remove("down"); KEY.release(performance.now()); beep(false);
+  });
+
+  $("btnMic").addEventListener("click", async () => {
+    if (MIC.active) { MIC.stop(); return; }
+    DEC.reset();
+    const ok = await MIC.start();
+    if (ok) { $("btnMic").textContent = "■ 마이크 정지"; $("btnMic").classList.remove("primary"); }
+  });
+
+  /* 참고표 */
+  $("refTable").innerHTML = Object.entries(MORSE)
+    .filter(([ch]) => /^[A-Z0-9]$/.test(ch))
+    .map(([ch, c]) => `<div><b>${ch}</b><span>${pretty(c)}</span></div>`).join("");
+
+  $("textIn").value = "SOS";
+  syncFromText();
+  updateTags();
+}
+
+/* 전건용 사이드톤 */
+let sideOsc = null, sideGain = null;
+function beep(on){
+  if (!opt.sound) return;
+  actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+  if (actx.state === "suspended") actx.resume();
+  const t = actx.currentTime;
+  if (on) {
+    if (sideOsc) return;
+    sideGain = actx.createGain(); sideGain.gain.setValueAtTime(0, t);
+    sideGain.gain.linearRampToValueAtTime(opt.vol, t + 0.005);
+    sideGain.connect(actx.destination);
+    sideOsc = actx.createOscillator(); sideOsc.type = "sine";
+    sideOsc.frequency.value = opt.freq; sideOsc.connect(sideGain); sideOsc.start();
+  } else if (sideOsc) {
+    const o = sideOsc, g = sideGain; sideOsc = null; sideGain = null;
+    g.gain.cancelScheduledValues(t);
+    g.gain.setValueAtTime(g.gain.value, t);
+    g.gain.linearRampToValueAtTime(0, t + 0.006);
+    o.stop(t + 0.02);
+    setTimeout(() => { try { o.disconnect(); g.disconnect(); } catch (e) {} }, 80);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", init);
+
+/* 홈 화면에 추가했을 때 오프라인 동작 (https 또는 localhost에서만) */
+if ("serviceWorker" in navigator && /^https:$/.test(location.protocol))
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+</script>
+</body>
+</html>
