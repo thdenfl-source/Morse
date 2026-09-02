@@ -1,0 +1,15 @@
+{
+  "name": "모르스 부호 해석기",
+  "short_name": "모르스",
+  "description": "모르스 부호를 해석하고 만드는 앱 — 트리로 해독 과정을 봅니다",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#071523",
+  "theme_color": "#071523",
+  "lang": "ko",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
