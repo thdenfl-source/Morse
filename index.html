@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<meta name="theme-color" content="#071523">
+<meta name="theme-color" content="#080e16">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -14,16 +14,17 @@
 <title>MORSE CODE · 모르스 부호 해석기</title>
 <style>
 :root{
-  --bg:#071523; --bg2:#04101c; --panel:#0d2237; --panel2:#12304a; --panel3:#17395a;
-  --line:#1d4a6b; --line2:#2a5f86;
-  --accent:#3fe08f; --accent-dim:#1e7a4f; --accent-soft:rgba(63,224,143,.15);
-  --amber:#ffc861; --text:#dbeaf5; --muted:#7fa3bd; --danger:#ff6b6b;
-  --radius:14px;
+  --bg:#080e16; --bg2:#05090f; --panel:#101a26; --panel2:#16232f; --panel3:#1e2e3d;
+  --line:#223243; --line2:#33485c;
+  --accent:#d8b478; --accent-dim:#a07f3d; --accent-soft:rgba(216,180,120,.14);
+  --cool:#6f9ab4;
+  --ivory:#f0e6cf; --text:#e7edf3; --muted:#8497a8; --danger:#c2685f;
+  --radius:16px;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
 html,body{margin:0; padding:0}
 body{
-  background:radial-gradient(120% 80% at 50% 0%, #0b2136 0%, var(--bg) 45%, var(--bg2) 100%);
+  background:radial-gradient(120% 80% at 50% 0%, #111c29 0%, var(--bg) 45%, var(--bg2) 100%);
   background-attachment:fixed;
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",Segoe UI,Roboto,sans-serif;
@@ -35,26 +36,31 @@ body{
 
 /* ---------- header ---------- */
 header{
-  padding:16px 4px 10px; display:flex; align-items:center; gap:10px; justify-content:center;
+  padding:18px 4px 12px; display:flex; align-items:center; gap:11px; justify-content:center;
+  position:relative;
+}
+header::after{
+  content:""; position:absolute; left:26%; right:26%; bottom:4px; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(216,180,120,.45), transparent);
 }
 header h1{
-  margin:0; font-size:19px; letter-spacing:.32em; font-weight:600;
-  color:#eaf6ff; text-shadow:0 0 18px rgba(63,224,143,.35);
+  margin:0; font-size:19px; letter-spacing:.34em; font-weight:500;
+  color:#eef2f7; text-shadow:0 0 18px rgba(216,180,120,.30);
 }
 header .moon{
   width:16px;height:16px;border-radius:50%;
-  background:radial-gradient(circle at 30% 30%, #fff0c9, #e8b95c);
-  box-shadow:0 0 14px rgba(255,200,97,.55);
+  background:radial-gradient(circle at 30% 30%, #f7ead0, #c9a55f);
+  box-shadow:0 0 14px rgba(216,180,120,.5);
 }
 
 /* ---------- cards ---------- */
 .card{
-  background:linear-gradient(180deg, rgba(19,50,78,.75), rgba(10,30,49,.75));
+  background:linear-gradient(180deg, rgba(23,35,48,.72), rgba(13,21,30,.72));
   border:1px solid var(--line);
   border-radius:var(--radius);
   padding:12px;
   margin-bottom:12px;
-  box-shadow:0 6px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+  box-shadow:0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
 }
 .card h2{
   margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:.14em;
@@ -65,13 +71,13 @@ header .moon{
 label.fl{display:block; font-size:11px; letter-spacing:.1em; color:var(--muted); margin:0 0 5px 2px; font-weight:600}
 
 textarea, input[type=text]{
-  width:100%; background:#08192a; color:var(--text);
+  width:100%; background:#0b131c; color:var(--text);
   border:1px solid var(--line); border-radius:10px;
   padding:10px 11px; font-size:16px; font-family:inherit; resize:vertical;
   outline:none; transition:border-color .15s, box-shadow .15s;
 }
 textarea:focus, input[type=text]:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
-textarea::placeholder,input::placeholder{color:#4a6e8a}
+textarea::placeholder,input::placeholder{color:#4d6273}
 #morseOut{
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   letter-spacing:.06em; color:var(--accent); min-height:58px; line-height:1.6;
@@ -90,15 +96,16 @@ button{
 button:active{transform:translateY(1px)}
 button:disabled{opacity:.4; cursor:default}
 button.primary{
-  background:linear-gradient(180deg,#2fbe78,#1d8d58); border-color:#3fe08f; color:#04160d;
-  box-shadow:0 0 18px rgba(63,224,143,.28);
+  background:linear-gradient(180deg,#eed4a0,#bd9750); border-color:#d3ae6c; color:#1a1206;
+  box-shadow:0 2px 10px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.38);
 }
 button.ghost{background:transparent}
-button.on{background:linear-gradient(180deg,#2fbe78,#1d8d58); border-color:#3fe08f; color:#04160d}
+button.on{background:linear-gradient(180deg,#eed4a0,#bd9750); border-color:#d3ae6c; color:#1a1206;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
 button.sm{padding:6px 10px; font-size:12.5px; font-weight:600}
-button.danger.on{background:linear-gradient(180deg,#e05555,#a83333); border-color:#ff6b6b; color:#fff}
+button.danger.on{background:linear-gradient(180deg,#b5564c,#8a3a33); border-color:#c2685f; color:#fff}
 
-.seg{display:flex; background:#08192a; border:1px solid var(--line); border-radius:11px; padding:3px; gap:3px; width:100%}
+.seg{display:flex; background:#0b131c; border:1px solid var(--line); border-radius:11px; padding:3px; gap:3px; width:100%}
 .seg button{flex:1; background:transparent; border:none; border-radius:8px; padding:9px 4px; font-size:13px; color:var(--muted)}
 .seg button.on{background:var(--panel3); color:var(--accent); box-shadow:inset 0 0 0 1px var(--line2)}
 
@@ -109,71 +116,77 @@ button.danger.on{background:linear-gradient(180deg,#e05555,#a83333); border-colo
 input[type=range]{
   -webkit-appearance:none; appearance:none; flex:1; height:22px; background:transparent; outline:none; margin:0;
 }
-input[type=range]::-webkit-slider-runnable-track{height:4px; background:var(--line); border-radius:2px}
+input[type=range]::-webkit-slider-runnable-track{height:3px; background:var(--line); border-radius:2px}
 input[type=range]::-webkit-slider-thumb{
   -webkit-appearance:none; width:18px; height:18px; margin-top:-7px; border-radius:50%;
-  background:var(--accent); border:2px solid #06202f; box-shadow:0 0 10px rgba(63,224,143,.6);
+  background:linear-gradient(180deg,#e6c891,#b9954f); border:1px solid #0b131c;
+  box-shadow:0 2px 5px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.35);
 }
 input[type=range]::-moz-range-track{height:4px; background:var(--line); border-radius:2px}
-input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid #06202f}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#d8b478;border:1px solid #0b131c}
 
 /* ---------- decode readout ---------- */
 .readout{
   display:flex; align-items:center; gap:10px; margin-bottom:10px;
-  background:#08192a; border:1px solid var(--line); border-radius:11px; padding:9px 11px;
+  background:#0b131c; border:1px solid var(--line); border-radius:11px; padding:9px 11px;
 }
 .lamp{
   width:16px;height:16px;border-radius:50%; flex:none;
-  background:#123; border:1px solid var(--line2); transition:.05s;
+  background:#131e29; border:1px solid var(--line2); transition:.05s;
 }
-.lamp.on{background:var(--accent); box-shadow:0 0 16px 3px rgba(63,224,143,.75); border-color:var(--accent)}
+.lamp.on{background:radial-gradient(circle at 34% 32%, #f6e3b8, #c8a15f);
+  box-shadow:0 0 14px 2px rgba(216,180,120,.5); border-color:#c8a15f}
 #chips{
   flex:1; min-height:22px; display:flex; align-items:center; gap:7px; flex-wrap:wrap;
   font-family:ui-monospace,Menlo,monospace; color:var(--accent); font-size:19px; letter-spacing:.08em;
 }
 #chips .sym{animation:pop .18s ease-out}
 @keyframes pop{from{opacity:0; transform:scale(.5)}to{opacity:1;transform:scale(1)}}
-#chips .hint{font-size:12px; color:#3c6480; letter-spacing:0; font-family:inherit}
+#chips .hint{font-size:12px; color:#55697b; letter-spacing:0; font-family:inherit}
 .charbox{
   flex:none; min-width:46px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;
-  font-size:22px; font-weight:700; color:var(--amber);
+  font-size:22px; font-weight:700; color:var(--ivory);
   background:var(--panel); border:1px solid var(--line2);
 }
 .charbox.flash{animation:flash .45s ease-out}
-@keyframes flash{0%{background:var(--accent); color:#04160d; box-shadow:0 0 22px rgba(63,224,143,.7)}100%{background:var(--panel); color:var(--amber)}}
+@keyframes flash{
+  0%{border-color:var(--accent); box-shadow:0 0 20px rgba(216,180,120,.55); transform:scale(1.07)}
+  100%{border-color:var(--line2); box-shadow:none; transform:scale(1)}
+}
 
 #decoded{
-  margin-top:10px; background:#08192a; border:1px solid var(--line); border-radius:11px;
+  margin-top:10px; background:#0b131c; border:1px solid var(--line); border-radius:11px;
   padding:10px 11px; min-height:44px; font-size:17px; letter-spacing:.06em; word-break:break-word;
-  color:#eaf6ff;
+  color:#eef2f7;
 }
 #decoded .cursor{display:inline-block; width:9px; color:var(--accent); animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-#decoded:empty::before{content:"해독된 글자가 여기에 나타납니다"; color:#3c6480; font-size:13px; letter-spacing:0}
+#decoded:empty::before{content:"해독된 글자가 여기에 나타납니다"; color:#55697b; font-size:13px; letter-spacing:0}
 
 /* ---------- tree ---------- */
 .treewrap{
   position:relative; background:
-    radial-gradient(90% 70% at 50% 0%, rgba(30,90,130,.28), transparent 70%), #061420;
+    radial-gradient(90% 70% at 50% 0%, rgba(216,180,120,.07), transparent 70%), #070d14;
   border:1px solid var(--line); border-radius:12px; padding:4px 2px 2px; overflow:hidden;
 }
 .treewrap .stars{position:absolute; inset:0; pointer-events:none; opacity:.5}
 svg#tree{display:block; width:100%; height:auto; touch-action:manipulation}
 svg#tree text{font-family:inherit; font-weight:700; pointer-events:none; user-select:none}
-.edge{stroke:var(--line2); stroke-width:1.6; fill:none; opacity:.55}
+.edge{stroke:var(--line2); stroke-width:1.6; fill:none; opacity:.62}
 .edge.hot{stroke:var(--accent); stroke-width:2.6; opacity:1; filter:url(#glow)}
-.emark{fill:#4d7fa3; opacity:.75}
+.emark{fill:#63809a; opacity:.75}
 .edge.hot + .emark, .emark.hot{fill:var(--accent); opacity:1}
 .nd circle{fill:var(--panel2); stroke:var(--line2); stroke-width:1.5; transition:.12s}
-.nd text{fill:#bcd6e8; font-size:13px; transition:.12s}
-.nd.path circle{fill:#1a4a6b; stroke:#4fb98a}
-.nd.path text{fill:#dff5e9}
-.nd.cur circle{fill:var(--accent); stroke:#c9ffe4; stroke-width:2; filter:url(#glow)}
-.nd.cur text{fill:#04160d; font-size:14px}
+.nd.empty circle{fill:#101a26; stroke:var(--line)}
+.nd text{fill:#b6c7d5; font-size:13px; transition:.12s}
+.nd.path circle{fill:#1f2b38; stroke:#a5854c}
+.nd.path text{fill:#eef2f7}
+.nd.cur circle{fill:var(--accent); stroke:#f6efdd; stroke-width:2; filter:url(#glow)}
+.nd.cur text{fill:#181106; font-size:14px}
 .nd.done circle{animation:ndone .5s ease-out}
-@keyframes ndone{0%{fill:#ffe9b0; stroke:#fff}100%{fill:var(--panel2); stroke:var(--line2)}}
-.root circle{fill:#0d2237; stroke:var(--line2)}
-.root.cur circle{fill:#123a55; stroke:var(--accent)}
+@keyframes ndone{0%{fill:#e9d6ab; stroke:#f6efdd}100%{fill:var(--panel2); stroke:var(--line2)}}
+.root circle{fill:#101a26; stroke:var(--line2)}
+.root.cur circle{fill:#16222f; stroke:var(--accent); stroke-width:2}
 .ant{stroke:var(--line2); stroke-width:1.4; fill:none}
 .ant.hot{stroke:var(--accent)}
 
@@ -186,18 +199,21 @@ svg#tree text{font-family:inherit; font-weight:700; pointer-events:none; user-se
 /* ---------- tap key ---------- */
 #tapPad{
   width:100%; height:104px; border-radius:14px; margin-top:4px;
-  background:linear-gradient(180deg,#123c58,#0b2437); border:1px solid var(--line2);
+  background:linear-gradient(180deg,#1b2a38,#101a26); border:1px solid var(--line2);
   color:var(--muted); font-size:14px; font-weight:600; letter-spacing:.06em;
   display:flex; align-items:center; justify-content:center; flex-direction:column; gap:4px;
   touch-action:none; user-select:none; -webkit-user-select:none;
 }
-#tapPad.down{background:linear-gradient(180deg,#2fbe78,#1d8d58); color:#04160d; box-shadow:0 0 26px rgba(63,224,143,.4) inset}
+#tapPad.down{background:linear-gradient(180deg,#eed4a0,#bd9750); color:#1a1206;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), inset 0 0 30px rgba(0,0,0,.15)}
 #tapPad small{font-size:11px; font-weight:500; opacity:.8; letter-spacing:0}
 
 .hint{font-size:11.5px; color:var(--muted); margin-top:8px; line-height:1.5}
-.hint b{color:#a9c8dd; font-weight:600}
-#micBar{height:6px; background:#08192a; border:1px solid var(--line); border-radius:4px; overflow:hidden; margin-top:9px}
-#micBar > i{display:block; height:100%; width:0%; background:linear-gradient(90deg,#1d8d58,var(--accent)); transition:width .05s}
+.hint b{color:#b7c8d6; font-weight:600}
+#micBar{position:relative; height:8px; background:#0b131c; border:1px solid var(--line); border-radius:4px; margin-top:10px}
+#micBar > i{display:block; height:100%; width:0%; border-radius:3px; background:linear-gradient(90deg,#9c7938,var(--accent))}
+#micBar > b{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--cool); border-radius:1px; left:37%}
+#micBar.hot > i{background:linear-gradient(90deg,var(--accent),#f6efdd)}
 #micInfo{font-size:11.5px; color:var(--muted); margin-top:6px; font-variant-numeric:tabular-nums}
 
 /* reference table */
@@ -211,17 +227,17 @@ details.ref summary::after{content:" ▾"; color:var(--accent)}
 details.ref[open] summary::after{content:" ▴"}
 .reftable{display:grid; grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:5px; margin-top:10px}
 .reftable div{
-  background:#08192a; border:1px solid var(--line); border-radius:8px; padding:6px 7px;
+  background:#0b131c; border:1px solid var(--line); border-radius:8px; padding:6px 7px;
   font-size:12px; display:flex; gap:7px; align-items:baseline;
 }
-.reftable b{color:var(--amber); font-size:13px; width:14px; flex:none}
+.reftable b{color:var(--ivory); font-size:13px; width:14px; flex:none}
 .reftable span{font-family:ui-monospace,Menlo,monospace; color:var(--accent); letter-spacing:.05em; font-size:12px}
 .rules{font-size:12px; color:var(--muted); line-height:1.7; margin:8px 0 0; padding-left:18px}
 .rules li::marker{color:var(--accent)}
 
 #flash{position:fixed; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:99; transition:opacity .03s}
 #flash.on{opacity:.9}
-footer{text-align:center; font-size:11px; color:#3c6480; padding:10px 0 0}
+footer{text-align:center; font-size:11px; color:#55697b; padding:10px 0 0}
 </style>
 </head>
 <body>
@@ -236,7 +252,12 @@ footer{text-align:center; font-size:11px; color:#3c6480; padding:10px 0 0}
 <section class="card">
   <h2>입력 <span class="tag" id="wpmTag">12 WPM · 100 ms</span></h2>
 
-  <label class="fl" for="textIn">텍스트 (A–Z, 0–9, 문장부호)</label>
+  <div class="seg" id="langSeg" style="margin-bottom:10px">
+    <button data-lang="en" class="on">A 영문</button>
+    <button data-lang="ko">가 한글</button>
+  </div>
+
+  <label class="fl" for="textIn" id="textLabel">텍스트 (A–Z, 0–9, 문장부호)</label>
   <textarea id="textIn" rows="2" placeholder="예: SOS KOREA COAST GUARD" autocapitalize="characters" autocomplete="off" spellcheck="false"></textarea>
 
   <label class="fl" for="morseOut" style="margin-top:10px">모르스 부호 ( · − / 는 낱말 사이 )</label>
@@ -254,24 +275,22 @@ footer{text-align:center; font-size:11px; color:#3c6480; padding:10px 0 0}
     <input type="range" id="wpm" min="5" max="30" step="1" value="12">
     <span class="val" id="wpmVal">12 WPM</span>
   </div>
-  <details class="ref" style="margin-top:8px">
-    <summary>소리 · 진동 설정</summary>
-    <div class="ctl">
-      <span class="name">음높이</span>
-      <input type="range" id="freq" min="300" max="1000" step="10" value="600">
-      <span class="val" id="freqVal">600 Hz</span>
-    </div>
-    <div class="ctl">
-      <span class="name">음량</span>
-      <input type="range" id="vol" min="0" max="100" step="1" value="35">
-      <span class="val" id="volVal">35 %</span>
-    </div>
-    <div class="row tight" style="margin-top:10px">
-      <button class="sm ghost on" id="tgSound">🔊 소리</button>
-      <button class="sm ghost" id="tgVib">📳 진동</button>
-      <button class="sm ghost" id="tgFlash">💡 화면섬광</button>
-    </div>
-  </details>
+  <div class="ctl">
+    <span class="name">신호음</span>
+    <input type="range" id="freq" min="200" max="1200" step="10" value="600">
+    <span class="val" id="freqVal">600 Hz</span>
+  </div>
+  <div class="ctl">
+    <span class="name">음량</span>
+    <input type="range" id="vol" min="0" max="100" step="1" value="35">
+    <span class="val" id="volVal">35 %</span>
+  </div>
+  <div class="row tight" style="margin-top:10px">
+    <button class="sm ghost on" id="tgSound">🔊 소리</button>
+    <button class="sm ghost" id="tgVib">📳 진동</button>
+    <button class="sm ghost" id="tgFlash">💡 섬광</button>
+    <button class="sm ghost" id="btnTest">🔔 시험음</button>
+  </div>
 </section>
 
 <!-- ======== 하단: 트리 해독 ======== -->
@@ -291,7 +310,7 @@ footer{text-align:center; font-size:11px; color:#3c6480; padding:10px 0 0}
   <div class="legend">
     <span><i class="dot"></i> 도트 (1u)</span>
     <span><i class="dash"></i> 대시 (3u)</span>
-    <span style="color:#7fa3bd">글자를 누르면 입력창에 추가됩니다</span>
+    <span style="color:#8497a8">글자를 누르면 입력창에 추가됩니다</span>
   </div>
 
   <div id="decoded"></div>
@@ -326,16 +345,26 @@ footer{text-align:center; font-size:11px; color:#3c6480; padding:10px 0 0}
 
   <div id="panelMic" hidden>
     <div class="row"><button class="primary" id="btnMic" style="flex:1">🎙 마이크 시작</button></div>
-    <div id="micBar"><i></i></div>
-    <div id="micInfo">대기 중 — 700 Hz 안팎의 삐 소리를 들려주세요.</div>
-    <div class="hint">주변이 조용할수록 정확합니다. 처음 1초 동안 잡음 바닥을 측정한 뒤 해독을 시작합니다.</div>
+    <div class="ctl">
+      <span class="name">감도</span>
+      <input type="range" id="sens" min="4" max="24" step="1" value="9">
+      <span class="val" id="sensVal">9 dB</span>
+    </div>
+    <div class="row tight" style="margin-top:8px">
+      <button class="sm ghost on" id="tgMicAuto">🔎 주파수 자동</button>
+      <span class="hint" style="margin:0; flex:1">끄면 위 <b>신호음</b> 값 주변만 골라 듣습니다.</span>
+    </div>
+    <div id="micBar"><i></i><b></b></div>
+    <div id="micInfo">대기 중</div>
+    <div class="hint">막대가 <b>노란 눈금</b>을 넘으면 신호로 봅니다. 소리가 잡히지 않으면 감도를 낮추고,
+      주변 소음에 자꾸 반응하면 감도를 높이세요.</div>
   </div>
 </section>
 
 <!-- ======== 참고표 ======== -->
 <section class="card">
   <details class="ref">
-    <summary>국제 모르스 부호표 · 길이 규칙</summary>
+    <summary id="refTitle">국제 모르스 부호표 · 길이 규칙</summary>
     <ol class="rules">
       <li>도트( · )의 길이는 1단위(1u)입니다.</li>
       <li>대시( − )는 3단위입니다.</li>
@@ -343,6 +372,7 @@ footer{text-align:center; font-size:11px; color:#3c6480; padding:10px 0 0}
       <li>글자와 글자 사이는 3단위입니다.</li>
       <li>낱말과 낱말 사이는 7단위입니다.</li>
     </ol>
+    <div class="hint" id="refNote"></div>
     <div class="reftable" id="refTable"></div>
   </details>
 </section>
@@ -367,8 +397,104 @@ const MORSE = {
   ";":"-.-.-.", "=":"-...-",  "+":".-.-.",  "-":"-....-", "_":"..--.-",
   '"':".-..-.", "$":"...-..-","@":".--.-."
 };
-const CODE2CHAR = {};
-for (const [ch, code] of Object.entries(MORSE)) CODE2CHAR[code] = ch;
+/* 한글 모스 부호 (자모 하나에 부호 하나 — 국제 부호의 자리를 그대로 씁니다) */
+const JAMO = {
+  "ㄱ":".-..", "ㄴ":"..-.", "ㄷ":"-...", "ㄹ":"...-", "ㅁ":"--",   "ㅂ":".--",
+  "ㅅ":"---",  "ㅇ":"-.-",  "ㅈ":".--.", "ㅊ":"-.-.", "ㅋ":"-..-", "ㅌ":"--.-",
+  "ㅍ":"---.", "ㅎ":".---",
+  "ㅏ":".",    "ㅑ":"..",   "ㅓ":"-",    "ㅕ":"...",  "ㅗ":".-",   "ㅛ":"-.",
+  "ㅜ":"....", "ㅠ":".-.",  "ㅡ":"-..",  "ㅣ":"..-",  "ㅐ":"--..", "ㅔ":"-.--"
+};
+
+/* 언어별 부호표 — 숫자와 문장부호는 두 언어가 함께 씁니다 */
+const MORSE_KO = Object.assign({}, JAMO);
+for (const [ch, code] of Object.entries(MORSE)) if (!/^[A-Z]$/.test(ch)) MORSE_KO[ch] = code;
+
+const TABLES = { en: MORSE, ko: MORSE_KO };
+const REVS = { en: {}, ko: {} };
+for (const L of ["en", "ko"])
+  for (const [ch, code] of Object.entries(TABLES[L])) if (!(code in REVS[L])) REVS[L][code] = ch;
+
+let LANG = "en";
+const table = () => TABLES[LANG];
+const rev = () => REVS[LANG];
+
+/* ---------- 한글 자모 분해 · 조합 ---------- */
+const CHO  = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
+const JUNG = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
+const JONG = "\u0000ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ";
+
+/* 부호가 따로 없는 겹자모는 낱자 둘로 풀어 보냅니다 */
+const SPLIT = {
+  "ㄲ":"ㄱㄱ","ㄸ":"ㄷㄷ","ㅃ":"ㅂㅂ","ㅆ":"ㅅㅅ","ㅉ":"ㅈㅈ",
+  "ㄳ":"ㄱㅅ","ㄵ":"ㄴㅈ","ㄶ":"ㄴㅎ","ㄺ":"ㄹㄱ","ㄻ":"ㄹㅁ","ㄼ":"ㄹㅂ",
+  "ㄽ":"ㄹㅅ","ㄾ":"ㄹㅌ","ㄿ":"ㄹㅍ","ㅀ":"ㄹㅎ","ㅄ":"ㅂㅅ",
+  "ㅘ":"ㅗㅏ","ㅙ":"ㅗㅐ","ㅚ":"ㅗㅣ","ㅝ":"ㅜㅓ","ㅞ":"ㅜㅔ","ㅟ":"ㅜㅣ",
+  "ㅢ":"ㅡㅣ","ㅒ":"ㅑㅣ","ㅖ":"ㅕㅣ"
+};
+const JOIN_CHO  = { "ㄱㄱ":"ㄲ","ㄷㄷ":"ㄸ","ㅂㅂ":"ㅃ","ㅅㅅ":"ㅆ","ㅈㅈ":"ㅉ" };
+const JOIN_JUNG = { "ㅗㅏ":"ㅘ","ㅗㅐ":"ㅙ","ㅗㅣ":"ㅚ","ㅜㅓ":"ㅝ","ㅜㅔ":"ㅞ",
+                    "ㅜㅣ":"ㅟ","ㅡㅣ":"ㅢ","ㅑㅣ":"ㅒ","ㅕㅣ":"ㅖ" };
+const JOIN_JONG = { "ㄱㄱ":"ㄲ","ㅅㅅ":"ㅆ","ㄱㅅ":"ㄳ","ㄴㅈ":"ㄵ","ㄴㅎ":"ㄶ",
+                    "ㄹㄱ":"ㄺ","ㄹㅁ":"ㄻ","ㄹㅂ":"ㄼ","ㄹㅅ":"ㄽ","ㄹㅌ":"ㄾ",
+                    "ㄹㅍ":"ㄿ","ㄹㅎ":"ㅀ","ㅂㅅ":"ㅄ" };
+
+const expand = j => SPLIT[j] || j;
+
+/* 글자 → 자모 늘어놓기 ("해" → "ㅎㅐ") */
+function decomposeKo(text){
+  let out = "";
+  for (const ch of text) {
+    const u = ch.charCodeAt(0) - 0xAC00;
+    if (u >= 0 && u < 11172) {
+      out += expand(CHO[Math.floor(u / 588)]);
+      out += expand(JUNG[Math.floor((u % 588) / 28)]);
+      const t = u % 28;
+      if (t) out += expand(JONG[t]);
+    } else out += expand(ch);
+  }
+  return out;
+}
+
+/* 자모 늘어놓기 → 글자 ("ㅎㅐ" → "해") */
+function composeKo(str){
+  let out = "", cho = "", jung = "", jong = "";
+  const isV = c => JUNG.includes(c);
+  const isC = c => CHO.includes(c) || (JONG.includes(c) && c !== "\u0000");
+  const emit = () => {
+    const ci = CHO.indexOf(cho), vi = JUNG.indexOf(jung), ti = jong ? JONG.indexOf(jong) : 0;
+    out += (cho && jung && ci >= 0 && vi >= 0 && ti >= 0)
+      ? String.fromCharCode(0xAC00 + (ci * 21 + vi) * 28 + ti)
+      : cho + jung + jong;
+    cho = jung = jong = "";
+  };
+  for (const ch of str) {
+    if (isV(ch)) {
+      if (jong) {                                   // 받침을 다음 글자의 첫소리로 넘깁니다
+        const sp = SPLIT[jong];
+        const next = sp ? sp[1] : jong;
+        jong = sp ? sp[0] : "";
+        emit(); cho = next; jung = ch;
+      } else if (cho && jung) {
+        const p = JOIN_JUNG[jung + ch];
+        if (p) jung = p; else { emit(); jung = ch; }
+      } else if (cho) jung = ch;
+      else { emit(); jung = ch; }
+    } else if (isC(ch)) {
+      if (cho && !jung) {                           // 자음이 잇달면 된소리로 봅니다
+        const p = JOIN_CHO[cho + ch];
+        if (p) cho = p; else { emit(); cho = ch; }
+      } else if (cho && jung && !jong) {
+        if (JONG.includes(ch)) jong = ch; else { emit(); cho = ch; }
+      } else if (cho && jung && jong) {
+        const p = JOIN_JONG[jong + ch];
+        if (p) jong = p; else { emit(); cho = ch; }
+      } else { emit(); cho = ch; }
+    } else { emit(); out += ch; }
+  }
+  emit();
+  return out;
+}
 
 const DOT = "·", DASH = "−";           // 화면 표시용 기호
 const pretty = c => c.replace(/\./g, DOT).replace(/-/g, DASH);
@@ -380,10 +506,23 @@ const plain  = s => s.replace(/[·•.]/g, ".").replace(/[−–—_]/g, "-");
       · 오른쪽 절반: 가로 = 도트, 아래로 떨어짐 = 대시
       · 짧은 가지부터 위쪽 행에 채워 넣어 8열 × 7행으로 압축
    ===================================================================== */
-const LETTERS = {};                       // code -> 알파벳 (깊이 4까지)
-for (const [ch, code] of Object.entries(MORSE)) if (/^[A-Z]$/.test(ch)) LETTERS[code] = ch;
+let LETTERS = {};                         // code -> 글자 (깊이 4까지)
+let NODES = new Set();                    // 트리에 그릴 마디 (글자 + 지나가는 자리)
 
-const has  = c => Object.prototype.hasOwnProperty.call(LETTERS, c);
+/* 언어가 바뀌면 트리에 올릴 글자표도 바뀝니다 */
+function setTreeChars(chars){
+  LETTERS = {}; NODES = new Set();
+  for (const ch of chars) {
+    const code = table()[ch];
+    if (code && code.length <= 4) LETTERS[code] = ch;
+  }
+  for (const code of Object.keys(LETTERS)) {
+    NODES.add(code);
+    for (let i = 1; i < code.length; i++) NODES.add(code.slice(0, i));   // 지나가는 자리
+  }
+}
+
+const has  = c => NODES.has(c);
 const dirOf = c => (c[0] === "-" ? -1 : 1);              // 왼쪽/오른쪽 절반
 const hChild = c => c + (dirOf(c) < 0 ? "-" : ".");      // 가로로 이어지는 자식
 const dChild = c => c + (dirOf(c) < 0 ? "." : "-");      // 아래로 떨어지는 자식
@@ -437,12 +576,14 @@ function buildLayout(){
 
 /* ---------- SVG 그리기 ---------- */
 const CW = 44, CH = 52, PAD = 14, TOP = 20;
-const POS = buildLayout();
+let POS = {};
 const nodeEls = {}, edgeEls = {}, markEls = {};
 let treeW = 0, treeH = 0;
 
 function renderTree(){
   const svg = document.getElementById("tree");
+  POS = buildLayout();
+  for (const m of [nodeEls, edgeEls, markEls]) for (const k in m) delete m[k];
   const cols = Object.values(POS).map(p => p.col), rows = Object.values(POS).map(p => p.row);
   const minCol = Math.min(...cols), maxCol = Math.max(...cols), maxRow = Math.max(...rows);
   treeW = (maxCol - minCol + 1) * CW + PAD * 2;
@@ -462,12 +603,12 @@ function renderTree(){
     '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
 
   // 별 배경
-  const stars = el("g", { opacity: ".55" });
+  const stars = el("g", { opacity: ".42" });
   let seed = 7;
   const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
   for (let i = 0; i < 46; i++)
     stars.appendChild(el("circle", { cx: (rnd() * treeW).toFixed(1), cy: (rnd() * treeH).toFixed(1),
-      r: (rnd() * 1.1 + .3).toFixed(2), fill: "#9fd6ff", opacity: (rnd() * .55 + .12).toFixed(2) }));
+      r: (rnd() * 1.1 + .3).toFixed(2), fill: "#cfe3f2", opacity: (rnd() * .55 + .12).toFixed(2) }));
   svg.appendChild(stars);
 
   // 안테나 (루트 표시)
@@ -497,13 +638,13 @@ function renderTree(){
 
   Object.keys(POS).forEach(code => {
     const p = POS[code], x = X(p.col), y = Y(p.row);
-    const g = el("g", { class: code === "" ? "nd root" : "nd", "data-code": code });
-    g.appendChild(el("circle", { cx: x, cy: y, r: code === "" ? 11 : 14 }));
+    const ch = LETTERS[code];
+    const g = el("g", { class: code === "" ? "nd root" : (ch ? "nd" : "nd empty"), "data-code": code });
+    g.appendChild(el("circle", { cx: x, cy: y, r: code === "" ? 11 : (ch ? 14 : 7) }));
     const t = el("text", { x, y: y + 4.6, "text-anchor": "middle" });
-    t.textContent = code === "" ? "" : LETTERS[code];
+    t.textContent = ch || "";
     g.appendChild(t);
-    if (code !== "") g.style.cursor = "pointer";
-    g.addEventListener("click", () => { if (code) insertChar(LETTERS[code]); });
+    if (ch) { g.style.cursor = "pointer"; g.addEventListener("click", () => insertChar(ch)); }
     gNodes.appendChild(g); nodeEls[code] = g;
   });
 
@@ -540,9 +681,10 @@ function flashNode(code){
    ===================================================================== */
 function textToMorse(t){
   const out = [];
-  for (const raw of t.toUpperCase()) {
+  const src = LANG === "ko" ? decomposeKo(t) : t.toUpperCase();
+  for (const raw of src) {
     if (/\s/.test(raw)) { if (out.length && out[out.length - 1] !== "/") out.push("/"); continue; }
-    const c = MORSE[raw];
+    const c = table()[raw];
     if (c) out.push(c);
   }
   while (out[0] === "/") out.shift();
@@ -551,12 +693,13 @@ function textToMorse(t){
 }
 function morseToText(m){
   const toks = plain(m).replace(/\//g, " / ").trim().split(/\s+/).filter(Boolean);
+  const R = rev();
   let s = "";
   for (const t of toks) {
     if (t === "/") { if (s && !s.endsWith(" ")) s += " "; continue; }
-    s += CODE2CHAR[t] || "◇";
+    s += R[t] || "◇";
   }
-  return s;
+  return LANG === "ko" ? composeKo(s) : s;
 }
 
 /* =====================================================================
@@ -572,9 +715,10 @@ const DEC = {
     highlightPath(this.code);
     this.chips();
   },
+  setCode(c){ this.code = c; this.chips(); highlightPath(c); },
   endLetter(){
     if (!this.code) return;
-    const ch = CODE2CHAR[this.code];
+    const ch = rev()[this.code];
     flashNode(this.code);
     this.text += ch || "◇";
     charEl.textContent = ch || "?";
@@ -599,7 +743,8 @@ const DEC = {
     if (this.code.length > 4) h += '<span class="hint">숫자·문장부호는 5단계 이하 — 트리 밖</span>';
     chipsEl.innerHTML = h;
   },
-  paint(){ decEl.innerHTML = this.text.replace(/ /g, "&nbsp;") + '<span class="cursor">▍</span>'; }
+  out(){ return LANG === "ko" ? composeKo(this.text) : this.text; },
+  paint(){ decEl.innerHTML = this.out().replace(/ /g, "&nbsp;") + '<span class="cursor">▍</span>'; }
 };
 
 function setLamp(on){
@@ -611,7 +756,8 @@ function setTag(t){ $("treeTag").textContent = t; }
 /* =====================================================================
    5. 설정값
    ===================================================================== */
-const opt = { wpm: 12, freq: 600, vol: 0.35, sound: true, vib: false, flash: false, auto: true };
+const opt = { wpm: 12, freq: 600, vol: 0.35, sound: true, vib: false, flash: false,
+              auto: true, sens: 9, micAuto: true };
 const unitMs = () => 1200 / opt.wpm;              // PARIS 기준 1단위
 
 /* =====================================================================
@@ -716,22 +862,32 @@ function play(){
 /* =====================================================================
    7. 실시간 신호 해독기 (전건 · 마이크 공용)
    ===================================================================== */
+/* 가장 짧은 쪽 무리의 평균 = 1단위 길이 */
+const shortMean = arr => {
+  if (!arr.length) return 0;
+  const m = Math.min(...arr);
+  const s = arr.filter(v => v <= m * 1.8);
+  return s.reduce((a, b) => a + b, 0) / s.length;
+};
+
 const KEY = {
-  down: false, tDown: 0, tUp: 0, durs: [], letterDone: true, wordDone: true, tickId: 0,
+  down: false, tDown: 0, tUp: 0, durs: [], gaps: [], pend: [], letterDone: true, wordDone: true, tickId: 0,
   unit(){
     if (opt.auto && this.durs.length >= 3) {
-      const d = [...this.durs].sort((a, b) => a - b);
-      const mid = (d[0] + d[d.length - 1]) / 2;
-      const shorts = d.filter(x => x <= mid);
-      if (shorts.length) {
-        const m = shorts.reduce((a, b) => a + b, 0) / shorts.length;
-        return Math.max(25, Math.min(900, m));
-      }
+      // 소리가 켜진 길이는 실제보다 길게, 쉼은 짧게 잡힙니다(분석 창 때문).
+      // 둘을 함께 평균 내면 그 치우침이 서로 지워집니다.
+      const tu = shortMean(this.durs), gu = shortMean(this.gaps);
+      const u = (gu && gu < tu * 1.6) ? (tu + gu) / 2 : tu;
+      if (u) return Math.max(25, Math.min(900, u));
     }
     return unitMs();
   },
   press(t){
     if (this.down) return;
+    if (this.tUp) {
+      const g = t - this.tUp;                       // 방금 끝난 쉼의 길이
+      if (g > 5 && g < 2000) { this.gaps.push(g); if (this.gaps.length > 14) this.gaps.shift(); }
+    }
     this.down = true; this.tDown = t; setLamp(true);
   },
   release(t){
@@ -740,24 +896,39 @@ const KEY = {
     const d = t - this.tDown; this.tUp = t;
     if (d < 15) return;                                // 오검출 방지
     const u0 = this.unit();
-    const sym = d >= 2 * u0 ? "-" : ".";
     this.durs.push(d); if (this.durs.length > 14) this.durs.shift();
-    DEC.symbol(sym);
+    this.pend.push(d);
+    DEC.symbol(d >= 2 * u0 ? "-" : ".");            // 우선 지금 아는 속도로 보여 주고
     this.letterDone = false; this.wordDone = false;
     this.info();
+  },
+  /* 첫 글자는 상대 속도를 아직 모른 채 판정합니다.
+     글자를 확정하기 직전에 그동안 알아낸 속도로 다시 읽어 바로잡습니다. */
+  flush(){
+    if (this.pend.length) {
+      const u = this.unit();
+      const code = this.pend.map(d => (d >= 2 * u ? "-" : ".")).join("");
+      if (code !== DEC.code) DEC.setCode(code);
+      this.pend = [];
+    }
+    DEC.endLetter();
+  },
+  abort(){
+    this.down = false; this.pend = []; setLamp(false);
+    this.letterDone = true; this.wordDone = true;
+    DEC.code = ""; DEC.chips(); highlightPath("");
   },
   tick(){
     if (this.down) return;
     const u = this.unit(), s = performance.now() - this.tUp;
-    if (!this.letterDone && s > 2.2 * u) { DEC.endLetter(); this.letterDone = true; }   // 1u와 3u의 중간
+    if (!this.letterDone && s > 2.2 * u) { this.flush(); this.letterDone = true; }      // 1u와 3u의 중간
     if (!this.wordDone && this.letterDone && s > 5 * u) { DEC.endWord(); this.wordDone = true; }  // 3u와 7u의 중간
   },
   info(){
     const u = Math.round(this.unit());
-    $("micInfo").textContent = `수신 중 · 1u ≈ ${u} ms (약 ${Math.round(1200 / u)} WPM)`;
-    $("tapUnit").textContent = `${u} ms`;
+    $("tapUnit").textContent = `${u} ms (약 ${Math.round(1200 / u)} WPM)`;
   },
-  start(){ this.durs = []; this.letterDone = true; this.wordDone = true; this.tUp = performance.now();
+  start(){ this.durs = []; this.gaps = []; this.pend = []; this.letterDone = true; this.wordDone = true; this.tUp = performance.now();
            clearInterval(this.tickId); this.tickId = setInterval(() => this.tick(), 25); },
   stop(){ clearInterval(this.tickId); this.tickId = 0; this.down = false; setLamp(false); }
 };
@@ -769,74 +940,128 @@ const KEY = {
    8. 마이크 수신 — 톤을 감지해 같은 해독기로 보냅니다
    ===================================================================== */
 const MIC = {
-  stream: null, ctx: null, an: null, buf: null, raf: 0,
-  floor: -95, sig: -160, active: false, state: false, since: 0, calibUntil: 0,
+  stream: null, ctx: null, an: null, buf: null, zero: null, raf: 0,
+  active: false, state: false, since: 0, hz: 0, snr: 0, shown: 0,
+  hist: [], bias: 0, calibUntil: 0, onAt: 0,
+
+  /* 오디오는 버튼을 누른 그 순간에 열어야 합니다 (아이폰은 이후에는 열어 주지 않습니다) */
+  prep(){
+    if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (this.ctx.state === "suspended") this.ctx.resume();
+  },
+
   async start(){
+    this.prep();
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
       });
     } catch (e) {
-      $("micInfo").textContent = "마이크 권한이 필요합니다 (HTTPS 또는 localhost에서만 동작).";
+      const secure = location.protocol === "https:" || /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+      $("micInfo").textContent = secure
+        ? "마이크를 열 수 없습니다 — 브라우저에서 이 사이트의 마이크 권한을 허용해 주세요."
+        : "마이크는 https 주소에서만 열립니다 (GitHub Pages 주소로 접속하세요).";
       return false;
     }
-    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    if (this.ctx.state === "suspended") await this.ctx.resume();
     const src = this.ctx.createMediaStreamSource(this.stream);
     this.an = this.ctx.createAnalyser();
-    this.an.fftSize = 2048; this.an.smoothingTimeConstant = 0.05;
+    this.an.fftSize = 1024;                 // 약 21 ms 창 — 빠른 부호도 따라갑니다
+    this.an.smoothingTimeConstant = 0;
     src.connect(this.an);
+    // 사파리는 목적지까지 이어져야 그래프가 돕니다. 소리는 0으로 죽여서 되울림을 막습니다.
+    this.zero = this.ctx.createGain(); this.zero.gain.value = 0;
+    this.an.connect(this.zero); this.zero.connect(this.ctx.destination);
+
     this.buf = new Float32Array(this.an.frequencyBinCount);
-    this.floor = -95; this.sig = -160; this.state = false; this.active = true;
-    this.calibUntil = performance.now() + 900;
+    this.state = false; this.since = 0; this.active = true;
+    this.hist = []; this.bias = 0; this.calibUntil = performance.now() + 600;
     KEY.start();
     setTag("마이크 수신 중");
-    $("micInfo").textContent = "잡음 바닥 측정 중…";
     this.loop();
     return true;
   },
+
   loop(){
     if (!this.active) return;
-    this.an.getFloatFrequencyData(this.buf);
-    const sr = this.ctx.sampleRate, n = this.an.fftSize;
-    const lo = Math.floor(300 * n / sr), hi = Math.ceil(1400 * n / sr);
-    let peak = -160;
-    for (let i = lo; i <= hi && i < this.buf.length; i++) if (this.buf[i] > peak) peak = this.buf[i];
-    if (!(peak > -160)) peak = -160;                  // 완전한 무음 대비
+    const buf = this.buf, sr = this.ctx.sampleRate, n = this.an.fftSize;
+    this.an.getFloatFrequencyData(buf);
+    const bin = f => Math.max(1, Math.min(buf.length - 1, Math.round(f * n / sr)));
+
+    // 잡음 기준 = 200~2500 Hz 세기의 중앙값.
+    // 삐 소리는 좁은 대역이라 중앙값을 거의 흔들지 못하므로, 조용한 곳이든
+    // 시끄러운 곳이든 같은 기준으로 신호 대 잡음비를 잴 수 있습니다.
+    const lo = bin(200), hi = bin(2500), band = [];
+    for (let i = lo; i <= hi; i++) band.push(buf[i] > -160 ? buf[i] : -160);
+    band.sort((a, b) => a - b);
+    const noise = band[band.length >> 1];
+
+    // 신호 = 대상 주파수 둘레의 최대값 (자동이면 250~1500 Hz에서 가장 센 곳)
+    const a = opt.micAuto ? bin(250) : bin(opt.freq - 80);
+    const b = opt.micAuto ? bin(1500) : bin(opt.freq + 80);
+    let sigDb = -160, sigHz = 0;
+    for (let i = a; i <= b; i++) if (buf[i] > sigDb) { sigDb = buf[i]; sigHz = i * sr / n; }
+    if (!(sigDb > -160)) sigDb = -160;
+
+    // 넓은 대역의 '최대값 − 중앙값'은 아무 소리가 없어도 늘 얼마쯤 양수로 나옵니다.
+    // 최근 2초 값의 30 백분위수를 그 바닥으로 보고 빼야 조용한 곳과 시끄러운 곳이
+    // 같은 기준으로 읽힙니다. (부호에는 반드시 쉼이 있으므로 낮은 백분위수 = 쉼일 때의 값)
+    const raw = sigDb - noise;
+    if (!this.state) {                                  // 쉬는 동안에만 바닥을 다시 잽니다
+      this.hist.push(raw);                              // (신호가 길게 이어져도 바닥이 딸려 올라가지 않도록)
+      if (this.hist.length > 150) this.hist.shift();
+    }
+    if (this.hist.length) {
+      const sorted = [...this.hist].sort((a, b) => a - b);
+      this.bias = sorted[Math.floor(sorted.length * 0.3)];
+    }
+    const snr = raw - this.bias;
+    this.snr = snr;
 
     const now = performance.now();
     const calibrating = now < this.calibUntil;
-    // 잡음 바닥: 신호가 없을 때만 천천히 따라감 (디지털 무음까지 내려가지 않도록 하한)
-    if (calibrating || !this.state) this.floor = Math.max(-120, this.floor * 0.96 + peak * 0.04);
-    // 신호 크기: 즉시 올라가고 천천히 내려감
-    this.sig = peak > this.sig ? peak : this.sig * 0.995 + peak * 0.005;
-
-    // 문턱값은 잡음 바닥과 신호 크기의 사이 — 부호 사이의 짧은 무음도 놓치지 않습니다
-    const base = Math.max(this.floor + 9, this.sig - 15);
-    const lvl = Math.max(0, Math.min(100, (peak - this.floor) / Math.max(20, this.sig - this.floor) * 100));
-    $("micBar").firstElementChild.style.width = lvl.toFixed(0) + "%";
-
     if (!calibrating) {
-      const want = this.state ? peak > base - 3 : peak > base + 3;   // 이력(히스테리시스)
+      const want = this.state ? snr > opt.sens * 0.6 : snr > opt.sens;   // 이력(히스테리시스)
       if (want !== this.state) {
         if (!this.since) this.since = now;
-        if (now - this.since > 22) {                  // 채터링 방지
+        if (now - this.since > 20) {                                     // 채터링 방지
           this.state = want; this.since = 0;
-          if (want) KEY.press(now); else KEY.release(now);
+          if (want) { this.hz = Math.round(sigHz); this.onAt = now; KEY.press(now); }
+          else KEY.release(now);
         }
       } else this.since = 0;
-    } else if (now >= this.calibUntil - 20) {
-      $("micInfo").textContent = "수신 대기 — 삐 소리를 들려주세요.";
+
+      // 부호 하나가 2초를 넘을 수는 없습니다 — 잡음에 붙은 것으로 보고 풀고 다시 잽니다
+      if (this.state && now - this.onAt > 2000) {
+        this.state = false; this.since = 0;
+        KEY.abort();
+        this.hist = []; this.calibUntil = now + 600;
+      }
+    }
+
+    const bar = $("micBar");
+    bar.firstElementChild.style.width = Math.max(0, Math.min(100, snr / 24 * 100)).toFixed(0) + "%";
+    bar.classList.toggle("hot", this.state);
+
+    if (now - this.shown > 130) {                                      // 글자 떨림 방지
+      this.shown = now;
+      const u = Math.round(KEY.unit());
+      $("micInfo").textContent = calibrating
+        ? "잡음을 재는 중…"
+        : this.state
+          ? `수신 ● ${snr.toFixed(0)} dB · ${this.hz} Hz · 1u ≈ ${u} ms`
+          : `대기 중 · ${Math.max(0, snr).toFixed(0)} dB (기준 ${opt.sens} dB)`;
     }
     this.raf = requestAnimationFrame(() => this.loop());
   },
+
   stop(){
     this.active = false; cancelAnimationFrame(this.raf);
+    if (this.state) { this.state = false; KEY.release(performance.now()); }
     if (this.stream) this.stream.getTracks().forEach(t => t.stop());
     if (this.ctx) { try { this.ctx.close(); } catch (e) {} }
-    this.stream = null; this.ctx = null;
+    this.stream = null; this.ctx = null; this.an = null;
     KEY.stop();
-    $("micBar").firstElementChild.style.width = "0%";
+    const bar = $("micBar"); bar.firstElementChild.style.width = "0%"; bar.classList.remove("hot");
     $("btnMic").textContent = "🎙 마이크 시작"; $("btnMic").classList.add("primary");
     $("micInfo").textContent = "정지됨.";
     setTag("대기");
@@ -858,9 +1083,41 @@ function syncFromMorse(){
   syncing = false;
 }
 function insertChar(ch){
-  $("textIn").value += ch;
+  const box = $("textIn");
+  box.value = LANG === "ko" ? composeKo(decomposeKo(box.value) + ch) : box.value + ch;
   syncFromText();
-  $("textIn").focus();
+  box.focus();
+}
+
+function buildRef(){
+  const chars = LANG === "ko"
+    ? Object.keys(JAMO).concat("0123456789".split(""))
+    : "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
+  $("refTable").innerHTML = chars
+    .map(ch => `<div><b>${ch}</b><span>${pretty(table()[ch])}</span></div>`).join("");
+  $("refTitle").textContent = LANG === "ko" ? "한글 모스 부호표 · 길이 규칙" : "국제 모르스 부호표 · 길이 규칙";
+  $("refNote").textContent = LANG === "ko"
+    ? "ㄲ ㄸ ㅃ ㅆ ㅉ 과 겹받침·겹모음은 따로 부호가 없어 낱자 둘로 나누어 보냅니다 (ㄲ = ㄱ ㄱ, ㅘ = ㅗ ㅏ). 숫자와 문장부호는 국제 부호와 같습니다."
+    : "";
+}
+
+function setLang(l){
+  LANG = l;
+  document.querySelectorAll("#langSeg button").forEach(b => b.classList.toggle("on", b.dataset.lang === l));
+  const ko = l === "ko";
+  $("textLabel").textContent = ko ? "텍스트 (한글, 0–9, 문장부호)" : "텍스트 (A–Z, 0–9, 문장부호)";
+  $("textIn").placeholder = ko ? "예: 해경 헬기 구조 요청" : "예: SOS KOREA COAST GUARD";
+  $("textIn").setAttribute("autocapitalize", ko ? "off" : "characters");
+  setTreeChars(ko ? Object.keys(JAMO) : "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+  renderTree();
+  DEC.reset();
+  buildRef();
+  const cur = $("textIn").value;
+  syncFromText();
+  if (cur.trim() && !$("morseOut").value.trim()) {      // 바뀐 언어로 옮길 수 없는 글은 보기글로
+    $("textIn").value = ko ? "구조요청" : "SOS";
+    syncFromText();
+  }
 }
 
 let mode = "play";
@@ -891,12 +1148,16 @@ function updateTags(){
 
 /* 초기화 */
 function init(){
-  renderTree();
-  DEC.reset();
-
   bindRange("wpm",  v => `${v} WPM`, v => opt.wpm = v);
   bindRange("freq", v => `${v} Hz`,  v => opt.freq = v);
   bindRange("vol",  v => `${v} %`,   v => opt.vol = v / 100);
+  bindRange("sens", v => `${v} dB`,  v => {
+    opt.sens = v;
+    $("micBar").lastElementChild.style.left = (v / 24 * 100).toFixed(0) + "%";
+  });
+
+  document.querySelectorAll("#langSeg button").forEach(b =>
+    b.addEventListener("click", () => setLang(b.dataset.lang)));
 
   $("textIn").addEventListener("input", syncFromText);
   $("morseOut").addEventListener("input", syncFromMorse);
@@ -910,16 +1171,21 @@ function init(){
     const b = $("btnCopy"); b.textContent = "복사됨"; setTimeout(() => b.textContent = "복사", 1200);
   });
   $("btnResetDec").addEventListener("click", () => DEC.reset());
+  $("btnTest").addEventListener("click", () => {          // 지금 설정으로 짧게 삐 소리
+    beep(true, true);
+    setTimeout(() => beep(false, true), 450);
+  });
   $("btnToInput").addEventListener("click", () => {
-    if (!DEC.text.trim()) return;
-    $("textIn").value = DEC.text.trim(); syncFromText();
+    const t = DEC.out().trim();
+    if (!t) return;
+    $("textIn").value = t; syncFromText();
   });
 
   const tg = (id, key, extra) => $(id).addEventListener("click", e => {
     opt[key] = !opt[key]; e.currentTarget.classList.toggle("on", opt[key]);
     if (extra) extra();
   });
-  tg("tgSound", "sound"); tg("tgVib", "vib");
+  tg("tgSound", "sound"); tg("tgVib", "vib"); tg("tgMicAuto", "micAuto");
   tg("tgFlash", "flash", () => { if (!opt.flash) $("flash").classList.remove("on"); });
   tg("tgAuto", "auto");
 
@@ -948,25 +1214,22 @@ function init(){
 
   $("btnMic").addEventListener("click", async () => {
     if (MIC.active) { MIC.stop(); return; }
+    MIC.prep();                                            // 사용자가 누른 그 순간에 열어야 합니다
     DEC.reset();
+    $("micInfo").textContent = "마이크를 여는 중…";
     const ok = await MIC.start();
     if (ok) { $("btnMic").textContent = "■ 마이크 정지"; $("btnMic").classList.remove("primary"); }
   });
 
-  /* 참고표 */
-  $("refTable").innerHTML = Object.entries(MORSE)
-    .filter(([ch]) => /^[A-Z0-9]$/.test(ch))
-    .map(([ch, c]) => `<div><b>${ch}</b><span>${pretty(c)}</span></div>`).join("");
-
   $("textIn").value = "SOS";
-  syncFromText();
+  setLang("en");                                           // 트리 · 참고표 · 부호를 함께 세웁니다
   updateTags();
 }
 
 /* 전건용 사이드톤 */
 let sideOsc = null, sideGain = null;
-function beep(on){
-  if (!opt.sound) return;
+function beep(on, force){
+  if (!opt.sound && !force) return;
   actx = actx || new (window.AudioContext || window.webkitAudioContext)();
   if (actx.state === "suspended") actx.resume();
   const t = actx.currentTime;
