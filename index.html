@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
-<meta name="theme-color" content="#071523">
+<meta name="theme-color" content="#080e16">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -14,16 +14,17 @@
 <title>MORSE CODE · 모르스 부호 해석기</title>
 <style>
 :root{
-  --bg:#071523; --bg2:#04101c; --panel:#0d2237; --panel2:#12304a; --panel3:#17395a;
-  --line:#1d4a6b; --line2:#2a5f86;
-  --accent:#3fe08f; --accent-dim:#1e7a4f; --accent-soft:rgba(63,224,143,.15);
-  --amber:#ffc861; --text:#dbeaf5; --muted:#7fa3bd; --danger:#ff6b6b;
-  --radius:14px;
+  --bg:#080e16; --bg2:#05090f; --panel:#101a26; --panel2:#16232f; --panel3:#1e2e3d;
+  --line:#223243; --line2:#33485c;
+  --accent:#d8b478; --accent-dim:#a07f3d; --accent-soft:rgba(216,180,120,.14);
+  --cool:#6f9ab4;
+  --ivory:#f0e6cf; --text:#e7edf3; --muted:#8497a8; --danger:#c2685f;
+  --radius:16px;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
 html,body{margin:0; padding:0}
 body{
-  background:radial-gradient(120% 80% at 50% 0%, #0b2136 0%, var(--bg) 45%, var(--bg2) 100%);
+  background:radial-gradient(120% 80% at 50% 0%, #111c29 0%, var(--bg) 45%, var(--bg2) 100%);
   background-attachment:fixed;
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",Segoe UI,Roboto,sans-serif;
@@ -35,26 +36,31 @@ body{
 
 /* ---------- header ---------- */
 header{
-  padding:16px 4px 10px; display:flex; align-items:center; gap:10px; justify-content:center;
+  padding:18px 4px 12px; display:flex; align-items:center; gap:11px; justify-content:center;
+  position:relative;
+}
+header::after{
+  content:""; position:absolute; left:26%; right:26%; bottom:4px; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(216,180,120,.45), transparent);
 }
 header h1{
-  margin:0; font-size:19px; letter-spacing:.32em; font-weight:600;
-  color:#eaf6ff; text-shadow:0 0 18px rgba(63,224,143,.35);
+  margin:0; font-size:19px; letter-spacing:.34em; font-weight:500;
+  color:#eef2f7; text-shadow:0 0 18px rgba(216,180,120,.30);
 }
 header .moon{
   width:16px;height:16px;border-radius:50%;
-  background:radial-gradient(circle at 30% 30%, #fff0c9, #e8b95c);
-  box-shadow:0 0 14px rgba(255,200,97,.55);
+  background:radial-gradient(circle at 30% 30%, #f7ead0, #c9a55f);
+  box-shadow:0 0 14px rgba(216,180,120,.5);
 }
 
 /* ---------- cards ---------- */
 .card{
-  background:linear-gradient(180deg, rgba(19,50,78,.75), rgba(10,30,49,.75));
+  background:linear-gradient(180deg, rgba(23,35,48,.72), rgba(13,21,30,.72));
   border:1px solid var(--line);
   border-radius:var(--radius);
   padding:12px;
   margin-bottom:12px;
-  box-shadow:0 6px 24px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.04);
+  box-shadow:0 10px 30px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.05);
 }
 .card h2{
   margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:.14em;
@@ -65,13 +71,13 @@ header .moon{
 label.fl{display:block; font-size:11px; letter-spacing:.1em; color:var(--muted); margin:0 0 5px 2px; font-weight:600}
 
 textarea, input[type=text]{
-  width:100%; background:#08192a; color:var(--text);
+  width:100%; background:#0b131c; color:var(--text);
   border:1px solid var(--line); border-radius:10px;
   padding:10px 11px; font-size:16px; font-family:inherit; resize:vertical;
   outline:none; transition:border-color .15s, box-shadow .15s;
 }
 textarea:focus, input[type=text]:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
-textarea::placeholder,input::placeholder{color:#4a6e8a}
+textarea::placeholder,input::placeholder{color:#4d6273}
 #morseOut{
   font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   letter-spacing:.06em; color:var(--accent); min-height:58px; line-height:1.6;
@@ -90,15 +96,16 @@ button{
 button:active{transform:translateY(1px)}
 button:disabled{opacity:.4; cursor:default}
 button.primary{
-  background:linear-gradient(180deg,#2fbe78,#1d8d58); border-color:#3fe08f; color:#04160d;
-  box-shadow:0 0 18px rgba(63,224,143,.28);
+  background:linear-gradient(180deg,#eed4a0,#bd9750); border-color:#d3ae6c; color:#1a1206;
+  box-shadow:0 2px 10px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.38);
 }
 button.ghost{background:transparent}
-button.on{background:linear-gradient(180deg,#2fbe78,#1d8d58); border-color:#3fe08f; color:#04160d}
+button.on{background:linear-gradient(180deg,#eed4a0,#bd9750); border-color:#d3ae6c; color:#1a1206;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
 button.sm{padding:6px 10px; font-size:12.5px; font-weight:600}
-button.danger.on{background:linear-gradient(180deg,#e05555,#a83333); border-color:#ff6b6b; color:#fff}
+button.danger.on{background:linear-gradient(180deg,#b5564c,#8a3a33); border-color:#c2685f; color:#fff}
 
-.seg{display:flex; background:#08192a; border:1px solid var(--line); border-radius:11px; padding:3px; gap:3px; width:100%}
+.seg{display:flex; background:#0b131c; border:1px solid var(--line); border-radius:11px; padding:3px; gap:3px; width:100%}
 .seg button{flex:1; background:transparent; border:none; border-radius:8px; padding:9px 4px; font-size:13px; color:var(--muted)}
 .seg button.on{background:var(--panel3); color:var(--accent); box-shadow:inset 0 0 0 1px var(--line2)}
 
@@ -109,72 +116,77 @@ button.danger.on{background:linear-gradient(180deg,#e05555,#a83333); border-colo
 input[type=range]{
   -webkit-appearance:none; appearance:none; flex:1; height:22px; background:transparent; outline:none; margin:0;
 }
-input[type=range]::-webkit-slider-runnable-track{height:4px; background:var(--line); border-radius:2px}
+input[type=range]::-webkit-slider-runnable-track{height:3px; background:var(--line); border-radius:2px}
 input[type=range]::-webkit-slider-thumb{
   -webkit-appearance:none; width:18px; height:18px; margin-top:-7px; border-radius:50%;
-  background:var(--accent); border:2px solid #06202f; box-shadow:0 0 10px rgba(63,224,143,.6);
+  background:linear-gradient(180deg,#e6c891,#b9954f); border:1px solid #0b131c;
+  box-shadow:0 2px 5px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.35);
 }
 input[type=range]::-moz-range-track{height:4px; background:var(--line); border-radius:2px}
-input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--accent);border:2px solid #06202f}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#d8b478;border:1px solid #0b131c}
 
 /* ---------- decode readout ---------- */
 .readout{
   display:flex; align-items:center; gap:10px; margin-bottom:10px;
-  background:#08192a; border:1px solid var(--line); border-radius:11px; padding:9px 11px;
+  background:#0b131c; border:1px solid var(--line); border-radius:11px; padding:9px 11px;
 }
 .lamp{
   width:16px;height:16px;border-radius:50%; flex:none;
-  background:#123; border:1px solid var(--line2); transition:.05s;
+  background:#131e29; border:1px solid var(--line2); transition:.05s;
 }
-.lamp.on{background:var(--accent); box-shadow:0 0 16px 3px rgba(63,224,143,.75); border-color:var(--accent)}
+.lamp.on{background:radial-gradient(circle at 34% 32%, #f6e3b8, #c8a15f);
+  box-shadow:0 0 14px 2px rgba(216,180,120,.5); border-color:#c8a15f}
 #chips{
   flex:1; min-height:22px; display:flex; align-items:center; gap:7px; flex-wrap:wrap;
   font-family:ui-monospace,Menlo,monospace; color:var(--accent); font-size:19px; letter-spacing:.08em;
 }
 #chips .sym{animation:pop .18s ease-out}
 @keyframes pop{from{opacity:0; transform:scale(.5)}to{opacity:1;transform:scale(1)}}
-#chips .hint{font-size:12px; color:#3c6480; letter-spacing:0; font-family:inherit}
+#chips .hint{font-size:12px; color:#55697b; letter-spacing:0; font-family:inherit}
 .charbox{
   flex:none; min-width:46px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center;
-  font-size:22px; font-weight:700; color:var(--amber);
+  font-size:22px; font-weight:700; color:var(--ivory);
   background:var(--panel); border:1px solid var(--line2);
 }
 .charbox.flash{animation:flash .45s ease-out}
-@keyframes flash{0%{background:var(--accent); color:#04160d; box-shadow:0 0 22px rgba(63,224,143,.7)}100%{background:var(--panel); color:var(--amber)}}
+@keyframes flash{
+  0%{border-color:var(--accent); box-shadow:0 0 20px rgba(216,180,120,.55); transform:scale(1.07)}
+  100%{border-color:var(--line2); box-shadow:none; transform:scale(1)}
+}
 
 #decoded{
-  margin-top:10px; background:#08192a; border:1px solid var(--line); border-radius:11px;
+  margin-top:10px; background:#0b131c; border:1px solid var(--line); border-radius:11px;
   padding:10px 11px; min-height:44px; font-size:17px; letter-spacing:.06em; word-break:break-word;
-  color:#eaf6ff;
+  color:#eef2f7;
 }
 #decoded .cursor{display:inline-block; width:9px; color:var(--accent); animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
-#decoded:empty::before{content:"해독된 글자가 여기에 나타납니다"; color:#3c6480; font-size:13px; letter-spacing:0}
+#decoded:empty::before{content:"해독된 글자가 여기에 나타납니다"; color:#55697b; font-size:13px; letter-spacing:0}
 
 /* ---------- tree ---------- */
 .treewrap{
   position:relative; background:
-    radial-gradient(90% 70% at 50% 0%, rgba(30,90,130,.28), transparent 70%), #061420;
+    radial-gradient(90% 70% at 50% 0%, rgba(216,180,120,.07), transparent 70%), #070d14;
   border:1px solid var(--line); border-radius:12px; padding:4px 2px 2px; overflow:hidden;
 }
 .treewrap .stars{position:absolute; inset:0; pointer-events:none; opacity:.5}
 svg#tree{display:block; width:100%; height:auto; touch-action:manipulation}
 svg#tree text{font-family:inherit; font-weight:700; pointer-events:none; user-select:none}
-.edge{stroke:var(--line2); stroke-width:1.6; fill:none; opacity:.55}
+.edge{stroke:var(--line2); stroke-width:1.6; fill:none; opacity:.62}
 .edge.hot{stroke:var(--accent); stroke-width:2.6; opacity:1; filter:url(#glow)}
-.emark{fill:#4d7fa3; opacity:.75}
+.emark{fill:#63809a; opacity:.75}
 .edge.hot + .emark, .emark.hot{fill:var(--accent); opacity:1}
 .nd circle{fill:var(--panel2); stroke:var(--line2); stroke-width:1.5; transition:.12s}
-.nd.empty circle{fill:#0d2237; stroke:var(--line)}
-.nd text{fill:#bcd6e8; font-size:13px; transition:.12s}
-.nd.path circle{fill:#1a4a6b; stroke:#4fb98a}
-.nd.path text{fill:#dff5e9}
-.nd.cur circle{fill:var(--accent); stroke:#c9ffe4; stroke-width:2; filter:url(#glow)}
-.nd.cur text{fill:#04160d; font-size:14px}
+.nd.empty circle{fill:#101a26; stroke:var(--line)}
+.nd text{fill:#b6c7d5; font-size:13px; transition:.12s}
+.nd.path circle{fill:#1f2b38; stroke:#a5854c}
+.nd.path text{fill:#eef2f7}
+.nd.cur circle{fill:var(--accent); stroke:#f6efdd; stroke-width:2; filter:url(#glow)}
+.nd.cur text{fill:#181106; font-size:14px}
 .nd.done circle{animation:ndone .5s ease-out}
-@keyframes ndone{0%{fill:#ffe9b0; stroke:#fff}100%{fill:var(--panel2); stroke:var(--line2)}}
-.root circle{fill:#0d2237; stroke:var(--line2)}
-.root.cur circle{fill:#123a55; stroke:var(--accent)}
+@keyframes ndone{0%{fill:#e9d6ab; stroke:#f6efdd}100%{fill:var(--panel2); stroke:var(--line2)}}
+.root circle{fill:#101a26; stroke:var(--line2)}
+.root.cur circle{fill:#16222f; stroke:var(--accent); stroke-width:2}
 .ant{stroke:var(--line2); stroke-width:1.4; fill:none}
 .ant.hot{stroke:var(--accent)}
 
@@ -187,20 +199,21 @@ svg#tree text{font-family:inherit; font-weight:700; pointer-events:none; user-se
 /* ---------- tap key ---------- */
 #tapPad{
   width:100%; height:104px; border-radius:14px; margin-top:4px;
-  background:linear-gradient(180deg,#123c58,#0b2437); border:1px solid var(--line2);
+  background:linear-gradient(180deg,#1b2a38,#101a26); border:1px solid var(--line2);
   color:var(--muted); font-size:14px; font-weight:600; letter-spacing:.06em;
   display:flex; align-items:center; justify-content:center; flex-direction:column; gap:4px;
   touch-action:none; user-select:none; -webkit-user-select:none;
 }
-#tapPad.down{background:linear-gradient(180deg,#2fbe78,#1d8d58); color:#04160d; box-shadow:0 0 26px rgba(63,224,143,.4) inset}
+#tapPad.down{background:linear-gradient(180deg,#eed4a0,#bd9750); color:#1a1206;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.3), inset 0 0 30px rgba(0,0,0,.15)}
 #tapPad small{font-size:11px; font-weight:500; opacity:.8; letter-spacing:0}
 
 .hint{font-size:11.5px; color:var(--muted); margin-top:8px; line-height:1.5}
-.hint b{color:#a9c8dd; font-weight:600}
-#micBar{position:relative; height:8px; background:#08192a; border:1px solid var(--line); border-radius:4px; margin-top:10px}
-#micBar > i{display:block; height:100%; width:0%; border-radius:3px; background:linear-gradient(90deg,#1d8d58,var(--accent))}
-#micBar > b{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--amber); border-radius:1px; left:37%}
-#micBar.hot > i{background:linear-gradient(90deg,var(--accent),#c9ffe4)}
+.hint b{color:#b7c8d6; font-weight:600}
+#micBar{position:relative; height:8px; background:#0b131c; border:1px solid var(--line); border-radius:4px; margin-top:10px}
+#micBar > i{display:block; height:100%; width:0%; border-radius:3px; background:linear-gradient(90deg,#9c7938,var(--accent))}
+#micBar > b{position:absolute; top:-3px; bottom:-3px; width:2px; background:var(--cool); border-radius:1px; left:37%}
+#micBar.hot > i{background:linear-gradient(90deg,var(--accent),#f6efdd)}
 #micInfo{font-size:11.5px; color:var(--muted); margin-top:6px; font-variant-numeric:tabular-nums}
 
 /* reference table */
@@ -214,17 +227,17 @@ details.ref summary::after{content:" ▾"; color:var(--accent)}
 details.ref[open] summary::after{content:" ▴"}
 .reftable{display:grid; grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:5px; margin-top:10px}
 .reftable div{
-  background:#08192a; border:1px solid var(--line); border-radius:8px; padding:6px 7px;
+  background:#0b131c; border:1px solid var(--line); border-radius:8px; padding:6px 7px;
   font-size:12px; display:flex; gap:7px; align-items:baseline;
 }
-.reftable b{color:var(--amber); font-size:13px; width:14px; flex:none}
+.reftable b{color:var(--ivory); font-size:13px; width:14px; flex:none}
 .reftable span{font-family:ui-monospace,Menlo,monospace; color:var(--accent); letter-spacing:.05em; font-size:12px}
 .rules{font-size:12px; color:var(--muted); line-height:1.7; margin:8px 0 0; padding-left:18px}
 .rules li::marker{color:var(--accent)}
 
 #flash{position:fixed; inset:0; background:#fff; opacity:0; pointer-events:none; z-index:99; transition:opacity .03s}
 #flash.on{opacity:.9}
-footer{text-align:center; font-size:11px; color:#3c6480; padding:10px 0 0}
+footer{text-align:center; font-size:11px; color:#55697b; padding:10px 0 0}
 </style>
 </head>
 <body>
@@ -297,7 +310,7 @@ footer{text-align:center; font-size:11px; color:#3c6480; padding:10px 0 0}
   <div class="legend">
     <span><i class="dot"></i> 도트 (1u)</span>
     <span><i class="dash"></i> 대시 (3u)</span>
-    <span style="color:#7fa3bd">글자를 누르면 입력창에 추가됩니다</span>
+    <span style="color:#8497a8">글자를 누르면 입력창에 추가됩니다</span>
   </div>
 
   <div id="decoded"></div>
@@ -590,12 +603,12 @@ function renderTree(){
     '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>';
 
   // 별 배경
-  const stars = el("g", { opacity: ".55" });
+  const stars = el("g", { opacity: ".42" });
   let seed = 7;
   const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
   for (let i = 0; i < 46; i++)
     stars.appendChild(el("circle", { cx: (rnd() * treeW).toFixed(1), cy: (rnd() * treeH).toFixed(1),
-      r: (rnd() * 1.1 + .3).toFixed(2), fill: "#9fd6ff", opacity: (rnd() * .55 + .12).toFixed(2) }));
+      r: (rnd() * 1.1 + .3).toFixed(2), fill: "#cfe3f2", opacity: (rnd() * .55 + .12).toFixed(2) }));
   svg.appendChild(stars);
 
   // 안테나 (루트 표시)
