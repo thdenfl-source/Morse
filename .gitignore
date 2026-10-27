@@ -1,0 +1,9 @@
+node_modules/
+www/
+
+# 네이티브 프로젝트(android/, ios/)는 한 번 만든 뒤 함께 올려 두시면
+# 권한·아이콘·서명 설정이 보존됩니다. 올리지 않으시려면 아래 주석을 푸세요.
+# android/
+# ios/
+
+.DS_Store

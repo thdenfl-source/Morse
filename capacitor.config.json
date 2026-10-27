@@ -1,0 +1,13 @@
+{
+  "appId": "io.github.thdenfl.morse",
+  "appName": "모르스",
+  "webDir": "www",
+  "backgroundColor": "#080e16",
+  "android": {
+    "backgroundColor": "#080e16"
+  },
+  "ios": {
+    "backgroundColor": "#080e16",
+    "contentInset": "never"
+  }
+}

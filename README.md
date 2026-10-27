@@ -104,6 +104,47 @@
 
 ---
 
+## 휴대폰 앱(App Store · Play)으로 만들기
+
+Capacitor 설정이 이미 들어 있습니다. 웹과 앱이 **같은 `index.html` 하나**를 씁니다.
+
+```bash
+npm install                 # 처음 한 번
+npm run add:android         # android/ 폴더 생성
+npm run add:ios             # ios/ 폴더 생성 (맥에서)
+
+npm run android             # 고친 내용 반영 + Android Studio 열기
+npm run ios                 # 고친 내용 반영 + Xcode 열기
+```
+
+`npm run build`가 `index.html` · `manifest.json` · `icon.svg`를 `www/`로 복사합니다.
+`sw.js`는 넣지 않습니다 — 앱은 파일이 이미 기기에 있어 필요 없고, 오히려 옛 화면을 물고 있을 수 있습니다.
+
+**앱으로 쓸 때를 위해 들어 있는 것**
+
+| 항목 | 내용 |
+|---|---|
+| 진동 | 아이폰은 `navigator.vibrate`가 없어 Capacitor 햅틱으로 자동 전환됩니다 (`HAPTIC`) |
+| 서비스 워커 | 앱 안에서는 등록하지 않습니다 |
+| 화면 여백 | 노치·홈 막대를 피하도록 `safe-area-inset`을 줍니다 |
+| 바탕색 | 앱이 뜰 때 흰 화면이 번쩍이지 않게 `#080e16`로 맞춰 두었습니다 |
+
+**직접 해 주셔야 하는 것** (네이티브 폴더를 만든 뒤 한 번씩)
+
+1. `android/app/src/main/AndroidManifest.xml` 의 `<manifest>` 안에
+   `<uses-permission android:name="android.permission.RECORD_AUDIO" />` 추가
+2. `ios/App/App/Info.plist` 에 마이크 사용 문구 추가
+   ```xml
+   <key>NSMicrophoneUsageDescription</key>
+   <string>모르스 신호음을 듣고 해독하기 위해 마이크를 사용합니다. 녹음한 소리는 기기 밖으로 나가지 않습니다.</string>
+   ```
+3. 아이콘·시작 화면: `resources/icon.png`(1024×1024)와 `resources/splash.png`(2732×2732)를 둔 뒤
+   `npx @capacitor/assets generate --iconBackgroundColor '#080e16' --splashBackgroundColor '#080e16'`
+
+`capacitor.config.json`의 `appId`(`io.github.thdenfl.morse`)는 **한 번 정하면 못 바꾸니**
+스토어에 올리기 전에 원하시는 값으로 고치세요. 하이픈은 쓸 수 없습니다.
+홈 화면에 보일 이름은 `appName`(`모르스`), 스토어 등록 이름은 따로 길게 적으시면 됩니다.
+
 ## 파일
 
 | 파일 | 내용 |
@@ -111,7 +152,8 @@
 | `index.html` | 앱 전체 (HTML · CSS · JS 한 파일, 외부 라이브러리 없음) |
 | `manifest.json` | 홈 화면 추가용 설정 |
 | `icon.svg` | 앱 아이콘 |
-| `sw.js` | 오프라인 캐시 |
+| `sw.js` | 오프라인 캐시 (웹 전용) |
+| `capacitor.config.json` · `package.json` · `scripts/build-www.mjs` | 스토어 앱 빌드 설정 |
 
 트리 배치는 코드 안에서 계산합니다. 왼쪽 절반은 대시가 가로, 오른쪽 절반은 도트가 가로로 뻗고,
 남는 가지는 아래로 떨어뜨린 뒤 짧은 가지부터 위 행에 채워 압축합니다

@@ -26,10 +26,13 @@ html,body{margin:0; padding:0}
 body{
   background:radial-gradient(120% 80% at 50% 0%, #111c29 0%, var(--bg) 45%, var(--bg2) 100%);
   background-attachment:fixed;
+  /* 앱으로 설치했을 때 노치와 홈 막대를 피합니다 (웹에서는 0이라 변화 없음) */
+  padding:env(safe-area-inset-top) env(safe-area-inset-right)
+          calc(40px + env(safe-area-inset-bottom)) env(safe-area-inset-left);
   color:var(--text);
   font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",Segoe UI,Roboto,sans-serif;
   font-size:15px; line-height:1.45;
-  padding:0 0 40px; min-height:100vh;
+  min-height:100vh;
   overscroll-behavior-y:contain;
 }
 .wrap{max-width:520px; margin:0 auto; padding:0 12px}
@@ -761,6 +764,43 @@ const opt = { wpm: 12, freq: 600, vol: 0.35, sound: true, vib: false, flash: fal
 const unitMs = () => 1200 / opt.wpm;              // PARIS 기준 1단위
 
 /* =====================================================================
+   5-1. 진동 — 웹은 navigator.vibrate, 앱(특히 아이폰)은 Capacitor 햅틱
+   ===================================================================== */
+const HAPTIC = {
+  timers: [],
+  plugin(){ return window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Haptics; },
+  /* 재생 일정(ev)에 맞춰 부호마다 한 번씩 울립니다 */
+  run(ev, U){
+    this.stop();
+    const H = this.plugin();
+    if (H) {
+      for (const e of ev) {
+        if (e.type !== "tone") continue;
+        const at = Math.round(e.s * U * 1000), dur = Math.round((e.e - e.s) * U * 1000);
+        this.timers.push(setTimeout(() => { try { H.vibrate({ duration: dur }); } catch (err) {} }, at));
+      }
+    } else if (navigator.vibrate) {
+      const pat = []; let last = 0;
+      for (const e of ev) if (e.type === "tone") {
+        pat.push(Math.round((e.s - last) * U * 1000), Math.round((e.e - e.s) * U * 1000)); last = e.e;
+      }
+      if (pat[0] === 0) pat.shift();
+      try { navigator.vibrate(pat); } catch (err) {}
+    }
+  },
+  /* 전건을 누를 때의 짧은 손맛 */
+  tap(){
+    const H = this.plugin();
+    if (H) { try { H.impact({ style: "LIGHT" }); } catch (e) {} }
+    else if (navigator.vibrate) { try { navigator.vibrate(12); } catch (e) {} }
+  },
+  stop(){
+    this.timers.forEach(clearTimeout); this.timers = [];
+    if (navigator.vibrate) { try { navigator.vibrate(0); } catch (e) {} }
+  }
+};
+
+/* =====================================================================
    6. 재생 (오디오 스케줄 + 트리 애니메이션)
    ===================================================================== */
 let actx = null, playing = false, rafId = 0, osc = null, gain = null;
@@ -790,7 +830,7 @@ function stopPlay(){
   cancelAnimationFrame(rafId);
   if (osc) { try { osc.stop(); } catch (e) {} osc.disconnect(); osc = null; }
   if (gain) { gain.disconnect(); gain = null; }
-  if (navigator.vibrate) try { navigator.vibrate(0); } catch (e) {}
+  HAPTIC.stop();
   setLamp(false);
   $("btnPlay").disabled = false; $("btnStop").disabled = true;
   $("btnPlay").textContent = "▶ 재생";
@@ -830,12 +870,7 @@ function play(){
     clock = () => (performance.now() - p0) / 1000;
   }
 
-  if (opt.vib && navigator.vibrate) {
-    const pat = []; let last = 0;
-    for (const e of ev) if (e.type === "tone") { pat.push(Math.round((e.s - last) * U * 1000), Math.round((e.e - e.s) * U * 1000)); last = e.e; }
-    if (pat[0] === 0) pat.shift();
-    try { navigator.vibrate(pat); } catch (e) {}
-  }
+  if (opt.vib) HAPTIC.run(ev, U);
 
   playing = true;
   $("btnPlay").disabled = true; $("btnStop").disabled = false;
@@ -1195,7 +1230,8 @@ function init(){
   /* 전건(탭) */
   const pad = $("tapPad");
   const down = e => { e.preventDefault(); if (mode !== "tap") return;
-    pad.classList.add("down"); KEY.press(performance.now()); beep(true); };
+    pad.classList.add("down"); KEY.press(performance.now()); beep(true);
+    if (opt.vib) HAPTIC.tap(); };
   const up = e => { if (mode !== "tap") return;
     pad.classList.remove("down"); KEY.release(performance.now()); beep(false); };
   pad.addEventListener("pointerdown", down);
@@ -1252,8 +1288,9 @@ function beep(on, force){
 
 document.addEventListener("DOMContentLoaded", init);
 
-/* 홈 화면에 추가했을 때 오프라인 동작 (https 또는 localhost에서만) */
-if ("serviceWorker" in navigator && /^https:$/.test(location.protocol))
+/* 홈 화면에 추가했을 때 오프라인 동작 (https 에서만).
+   스토어 앱으로 설치된 경우에는 파일이 이미 기기에 있으므로 등록하지 않습니다. */
+if (!window.Capacitor && "serviceWorker" in navigator && /^https:$/.test(location.protocol))
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
 </script>
 </body>
